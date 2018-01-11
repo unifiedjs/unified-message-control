@@ -3,5 +3,5 @@
 .nyc_output/
 coverage/
 node_modules/
-remark-message-control.js
-remark-message-control.min.js
+unified-message-control.js
+unified-message-control.min.js

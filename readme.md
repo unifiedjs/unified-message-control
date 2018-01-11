@@ -1,4 +1,4 @@
-# remark-message-control [![Build Status][build-badge]][build-status] [![Coverage Status][coverage-badge]][coverage-status] [![Chat][chat-badge]][chat]
+# unified-message-control [![Build Status][build-badge]][build-status] [![Coverage Status][coverage-badge]][coverage-status] [![Chat][chat-badge]][chat]
 
 Enable, disable, and ignore messages with [**remark**][remark].
 
@@ -163,17 +163,17 @@ repository, organisation, or community you agree to abide by its terms.
 
 <!-- Definitions -->
 
-[build-badge]: https://img.shields.io/travis/remarkjs/remark-message-control.svg
+[build-badge]: https://img.shields.io/travis/unifiedjs/unified-message-control.svg
 
-[build-status]: https://travis-ci.org/remarkjs/remark-message-control
+[build-status]: https://travis-ci.org/unifiedjs/unified-message-control
 
 [coverage-badge]: https://img.shields.io/codecov/c/github/remarkjs/remark-message-control.svg
 
 [coverage-status]: https://codecov.io/github/remarkjs/remark-message-control
 
-[chat-badge]: https://img.shields.io/gitter/room/remarkjs/Lobby.svg
+[chat-badge]: https://img.shields.io/gitter/room/unifiedjs/Lobby.svg
 
-[chat]: https://gitter.im/remarkjs/Lobby
+[chat]: https://gitter.im/unifiedjs/Lobby
 
 [license]: LICENSE
 
