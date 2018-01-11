@@ -3,7 +3,6 @@
 var trim = require('trim');
 var location = require('vfile-location');
 var visit = require('unist-util-visit');
-var marker = require('mdast-comment-marker');
 
 /* Map of allowed verbs. */
 var ALLOWED_VERBS = {
@@ -16,6 +15,7 @@ module.exports = messageControl;
 
 function messageControl(options) {
   var name = options && options.name;
+  var marker = options && options.marker;
   var sources;
   var known;
   var reset;
@@ -23,6 +23,10 @@ function messageControl(options) {
   var disable;
 
   if (!name) {
+    throw new Error('Expected `name` in `options`, got `' + name + '`');
+  }
+
+  if (!marker) {
     throw new Error('Expected `name` in `options`, got `' + name + '`');
   }
 
