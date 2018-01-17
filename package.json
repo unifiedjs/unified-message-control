@@ -27,6 +27,7 @@
   "devDependencies": {
     "browserify": "^14.0.0",
     "esmangle": "^1.0.0",
+    "mdast-comment-marker": "^1.0.2",
     "nyc": "^11.0.0",
     "remark": "^8.0.0",
     "remark-cli": "^4.0.0",

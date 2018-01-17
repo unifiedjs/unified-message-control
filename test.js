@@ -3,6 +3,7 @@
 var test = require('tape');
 var remark = require('remark');
 var toc = require('remark-toc');
+var mdastMarker = require('mdast-comment-marker');
 var control = require('./');
 
 test('control()', function (t) {
@@ -11,7 +12,7 @@ test('control()', function (t) {
   }, /Expected `name` in `options`, got `undefined`/);
 
   remark().use(function () {
-    var transformer = control({name: 'foo'});
+    var transformer = control({name: 'foo', marker: mdastMarker});
 
     return function (tree, file) {
       file.message('Error', tree.children[1], 'foo:bar');
@@ -32,7 +33,7 @@ test('control()', function (t) {
   });
 
   remark().use(function () {
-    var transformer = control({name: 'foo'});
+    var transformer = control({name: 'foo', marker: mdastMarker});
 
     return function (tree, file) {
       file.message('Error', tree.children[1], 'foo:bar');
@@ -54,7 +55,7 @@ test('control()', function (t) {
   });
 
   remark().use(function () {
-    var transformer = control({name: 'foo', reset: true});
+    var transformer = control({name: 'foo', reset: true, marker: mdastMarker});
 
     return function (tree, file) {
       file.message('Error', tree.children[0], 'foo:bar');
@@ -79,7 +80,7 @@ test('control()', function (t) {
   });
 
   remark().use(function () {
-    var transformer = control({name: 'foo', reset: true});
+    var transformer = control({name: 'foo', reset: true, marker: mdastMarker});
 
     return function (tree, file) {
       file.message('Error', tree.children[1], 'foo:bar');
@@ -101,7 +102,7 @@ test('control()', function (t) {
   });
 
   remark().use(function () {
-    var transformer = control({name: 'foo'});
+    var transformer = control({name: 'foo', marker: mdastMarker});
 
     return function (tree, file) {
       file.message('Error', tree.children[1], 'foo:bar');
@@ -128,7 +129,7 @@ test('control()', function (t) {
   });
 
   remark().use(function () {
-    var transformer = control({name: 'foo'});
+    var transformer = control({name: 'foo', marker: mdastMarker});
 
     return function (tree, file) {
       file.message('Error', tree.children[1], 'foo:bar');
@@ -155,7 +156,7 @@ test('control()', function (t) {
   });
 
   remark().use(function () {
-    var transformer = control({name: 'foo'});
+    var transformer = control({name: 'foo', marker: mdastMarker});
 
     return function (tree, file) {
       file.message('Error', tree.children[1], 'foo:bar');
@@ -180,7 +181,7 @@ test('control()', function (t) {
   });
 
   remark().use(function () {
-    var transformer = control({name: 'foo'});
+    var transformer = control({name: 'foo', marker: mdastMarker});
 
     return function (tree, file) {
       file.message('Error', tree.children[1], 'foo:bar');
@@ -205,7 +206,7 @@ test('control()', function (t) {
   });
 
   remark().use(function () {
-    var transformer = control({name: 'foo'});
+    var transformer = control({name: 'foo', marker: mdastMarker});
 
     return function (tree, file) {
       file.message('Error', tree.children[1], 'foo:bar');
@@ -228,7 +229,7 @@ test('control()', function (t) {
   });
 
   remark().use(function () {
-    return control({name: 'foo'});
+    return control({name: 'foo', marker: mdastMarker});
   }).process('<!--foo test-->', function (err) {
     t.equal(
       String(err),
@@ -239,7 +240,7 @@ test('control()', function (t) {
   });
 
   remark().use(toc).use(function () {
-    var transformer = control({name: 'foo'});
+    var transformer = control({name: 'foo', marker: mdastMarker});
 
     return function (tree, file) {
       file.message('Error', {line: 5, column: 1}, 'foo:bar');
@@ -266,7 +267,7 @@ test('control()', function (t) {
   });
 
   remark().use(function () {
-    var transformer = control({name: 'foo'});
+    var transformer = control({name: 'foo', marker: mdastMarker});
 
     return function (tree, file) {
       file.message('Error', {line: 5, column: 1}, 'foo:bar');
@@ -294,7 +295,7 @@ test('control()', function (t) {
   });
 
   remark().use(function () {
-    var transformer = control({name: 'foo'});
+    var transformer = control({name: 'foo', marker: mdastMarker});
 
     return function (tree, file) {
       file.message('Error', 'foo:bar');
@@ -312,7 +313,7 @@ test('control()', function (t) {
   });
 
   remark().use(function () {
-    var transformer = control({name: 'foo'});
+    var transformer = control({name: 'foo', marker: mdastMarker});
 
     return function (tree, file) {
       file.message('Error', tree.position.end, 'foo:bar');
@@ -333,7 +334,7 @@ test('control()', function (t) {
   });
 
   remark().use(function () {
-    var transformer = control({name: 'foo'});
+    var transformer = control({name: 'foo', marker: mdastMarker});
 
     return function (tree, file) {
       file.message('Error', tree.children[1].position.end, 'foo:bar');
@@ -355,7 +356,7 @@ test('control()', function (t) {
   });
 
   remark().use(function () {
-    var transformer = control({name: 'foo'});
+    var transformer = control({name: 'foo', marker: mdastMarker});
 
     return function (tree, file) {
       file.message('Error', tree.children[1], 'foo:bar');
@@ -382,7 +383,7 @@ test('control()', function (t) {
   });
 
   remark().use(function () {
-    var transformer = control({name: 'foo'});
+    var transformer = control({name: 'foo', marker: mdastMarker});
 
     return function (tree, file) {
       file.message('Error', 'foo:bar');
@@ -402,7 +403,7 @@ test('control()', function (t) {
   });
 
   remark().use(function () {
-    return control({name: 'foo'});
+    return control({name: 'foo', marker: mdastMarker});
   }).process([
     '<!doctype html>',
     '',
@@ -418,7 +419,7 @@ test('control()', function (t) {
   });
 
   remark().use(function () {
-    return control({name: 'foo', known: ['known']});
+    return control({name: 'foo', known: ['known'], marker: mdastMarker});
   }).process([
     '<!--foo ignore known-->',
     '',
@@ -434,7 +435,7 @@ test('control()', function (t) {
   });
 
   remark().use(function () {
-    var transformer = control({name: 'foo', source: 'baz'});
+    var transformer = control({name: 'foo', source: 'baz', marker: mdastMarker});
 
     return function (tree, file) {
       file.message('Error', tree.children[1], 'baz:bar');
@@ -456,7 +457,7 @@ test('control()', function (t) {
   });
 
   remark().use(function () {
-    var transformer = control({name: 'alpha', source: ['bravo', 'charlie']});
+    var transformer = control({name: 'alpha', source: ['bravo', 'charlie'], marker: mdastMarker});
 
     return function (tree, file) {
       file.message('Error', tree.children[1], 'bravo:delta');
@@ -483,7 +484,7 @@ test('control()', function (t) {
   });
 
   remark().use(function () {
-    var transformer = control({name: 'foo', disable: ['bar']});
+    var transformer = control({name: 'foo', disable: ['bar'], marker: mdastMarker});
 
     return function (tree, file) {
       file.message('Error', tree.children[0], 'foo:bar');
@@ -506,7 +507,8 @@ test('control()', function (t) {
     var transformer = control({
       name: 'foo',
       reset: true,
-      enable: ['bar']
+      enable: ['bar'],
+      marker: mdastMarker
     });
 
     return function (tree, file) {
