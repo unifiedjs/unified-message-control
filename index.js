@@ -3,7 +3,6 @@
 var trim = require('trim');
 var location = require('vfile-location');
 var visit = require('unist-util-visit');
-var marker = require('mdast-comment-marker');
 
 /* Map of allowed verbs. */
 var ALLOWED_VERBS = {
@@ -16,6 +15,8 @@ module.exports = messageControl;
 
 function messageControl(options) {
   var name = options && options.name;
+  var marker = options && options.marker;
+  var test = options && options.test;
   var sources;
   var known;
   var reset;
@@ -24,6 +25,14 @@ function messageControl(options) {
 
   if (!name) {
     throw new Error('Expected `name` in `options`, got `' + name + '`');
+  }
+
+  if (!marker) {
+    throw new Error('Expected `name` in `options`, got `' + name + '`');
+  }
+
+  if (!test) {
+    throw new Error('Expected `test` in `options`, got `' + test + '`');
   }
 
   known = options.known;
@@ -47,7 +56,7 @@ function messageControl(options) {
     var scope = {};
     var globals = [];
 
-    visit(tree, 'html', visitor);
+    visit(tree, test, visitor);
 
     file.messages = file.messages.filter(filter);
 
@@ -74,8 +83,10 @@ function messageControl(options) {
 
       if (!verb || !ALLOWED_VERBS[verb] === true) {
         file.fail(
-          'Unknown keyword `' + verb + '`: expected ' +
-          '`\'enable\'`, `\'disable\'`, or `\'ignore\'`',
+          'Unknown keyword `' +
+            verb +
+            '`: expected ' +
+            '`\'enable\'`, `\'disable\'`, or `\'ignore\'`',
           mark.node
         );
       }
@@ -132,10 +143,7 @@ function messageControl(options) {
       pos = toOffset(message);
 
       while (gapIndex--) {
-        if (
-          gaps[gapIndex].start <= pos &&
-          gaps[gapIndex].end > pos
-        ) {
+        if (gaps[gapIndex].start <= pos && gaps[gapIndex].end > pos) {
           return false;
         }
       }
@@ -217,7 +225,8 @@ function messageControl(options) {
 
         if (
           range.position.line < message.line ||
-          (range.position.line === message.line && range.position.column < message.column)
+          (range.position.line === message.line &&
+            range.position.column < message.column)
         ) {
           return range.state === true;
         }
@@ -258,10 +267,7 @@ function detectGaps(tree, file) {
     update();
 
     update(
-      tree &&
-      tree.position &&
-      tree.position.end &&
-      tree.position.end.offset - 1
+      tree && tree.position && tree.position.end && tree.position.end.offset - 1
     );
   }
 

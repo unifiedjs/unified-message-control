@@ -1,10 +1,10 @@
 {
-  "name": "remark-message-control",
-  "version": "4.0.2",
-  "description": "Enable, disable, and ignore messages with remark",
+  "name": "unified-message-control",
+  "version": "0.0.0",
+  "description": "Enable, disable, and ignore messages from unified processors",
   "license": "MIT",
   "keywords": [
-    "remark",
+    "unified",
     "comment",
     "message",
     "marker",
@@ -20,7 +20,6 @@
     "index.js"
   ],
   "dependencies": {
-    "mdast-comment-marker": "^1.0.0",
     "trim": "0.0.1",
     "unist-util-visit": "^1.0.0",
     "vfile-location": "^2.0.0"
@@ -28,6 +27,7 @@
   "devDependencies": {
     "browserify": "^14.0.0",
     "esmangle": "^1.0.0",
+    "mdast-comment-marker": "^1.0.2",
     "nyc": "^11.0.0",
     "remark": "^8.0.0",
     "remark-cli": "^4.0.0",
@@ -38,8 +38,8 @@
   },
   "scripts": {
     "build-md": "remark . -qfo",
-    "build-bundle": "browserify index.js --bare -s remarkMessageControl > remark-message-control.js",
-    "build-mangle": "esmangle remark-message-control.js > remark-message-control.min.js",
+    "build-bundle": "browserify index.js --bare -s unifiedMessageControl > unified-message-control.js",
+    "build-mangle": "esmangle unified-message-control.js > unified-message-control.min.js",
     "build": "npm run build-md && npm run build-bundle && npm run build-mangle",
     "lint": "xo",
     "test-api": "node test.js",
