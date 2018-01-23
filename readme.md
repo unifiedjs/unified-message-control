@@ -1,13 +1,13 @@
 # unified-message-control [![Build Status][build-badge]][build-status] [![Coverage Status][coverage-badge]][coverage-status] [![Chat][chat-badge]][chat]
 
-Enable, disable, and ignore messages with [**remark**][remark].
+Enable, disable, and ignore messages with [**unified**][unified].
 
 ## Installation
 
 [npm][]:
 
 ```bash
-npm install remark-message-control
+npm install unified-message-control
 ```
 
 ## Usage
@@ -26,11 +26,12 @@ And our script, `example.js`, looks as follows:
 var vfile = require('to-vfile');
 var report = require('vfile-reporter');
 var remark = require('remark');
-var control = require('remark-message-control');
+var control = require('unified-message-control');
+var mdastMarker = require('mdast-comment-marker');
 
 remark()
   .use(warn)
-  .use(control, {name: 'foo'})
+  .use(control, {name: 'foo', marker: mdastMarker, test: 'html'})
   .process(vfile.readSync('example.md'), function (err, file) {
     console.error(report(err || file));
   });
@@ -50,7 +51,7 @@ example.md: no issues found
 
 ## API
 
-### `remark.use(control, options)`
+### `unified.use(control, options)`
 
 Let comment markers control messages from a certain sources.
 
@@ -65,6 +66,20 @@ For example, `{name: 'alpha'}` controls `alpha` markers:
 ```markdown
 <!--alpha ignore-->
 ```
+
+###### `options.marker`
+
+`function` — function that returns a [comment marker object][marker]
+for a matched comment, and `null` for a non-matched comment.
+
+###### `options.test`
+
+(`Function`, `string`, `Object`, or `Array.<Test>`)
+—  When `string`, works like passing `function (node) {return
+node.type === test}`.
+When `array`, checks any one of the subtests pass.
+When `object`, checks that all keys in `test` are in `node`,
+and that they have (strictly) equal values
 
 ###### `options.known`
 
@@ -151,7 +166,7 @@ For example, to turn off certain messages for the next node:
 
 ## Contribute
 
-See [`contribute.md` in `remarkjs/remarkjs`][contribute] for ways to get
+See [`contribute.md` in `unified/unified`][contribute] for ways to get
 started.
 
 This organisation has a [Code of Conduct][coc].  By interacting with this
@@ -167,9 +182,9 @@ repository, organisation, or community you agree to abide by its terms.
 
 [build-status]: https://travis-ci.org/unifiedjs/unified-message-control
 
-[coverage-badge]: https://img.shields.io/codecov/c/github/remarkjs/remark-message-control.svg
+[coverage-badge]: https://img.shields.io/codecov/c/github/unifiedjs/unified-message-control.svg
 
-[coverage-status]: https://codecov.io/github/remarkjs/remark-message-control
+[coverage-status]: https://codecov.io/github/unifiedjs/unified-message-control
 
 [chat-badge]: https://img.shields.io/gitter/room/unifiedjs/Lobby.svg
 
@@ -181,8 +196,10 @@ repository, organisation, or community you agree to abide by its terms.
 
 [npm]: https://docs.npmjs.com/cli/install
 
-[remark]: https://github.com/remarkjs/remark
+[marker]: https://github.com/syntax-tree/mdast-comment-marker#marker
 
-[contribute]: https://github.com/remarkjs/remark/blob/master/contributing.md
+[unified]: https://github.com/unifiedjs/unified
 
-[coc]: https://github.com/remarkjs/remark/blob/master/code-of-conduct.md
+[contribute]: https://github.com/unifiedjs/unified/blob/master/contributing.md
+
+[coc]: https://github.com/unifiedjs/unified/blob/master/code-of-conduct.md
