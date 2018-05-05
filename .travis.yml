@@ -4,21 +4,13 @@ node_js:
 - '9.0'
 after_script: bash <(curl -s https://codecov.io/bash)
 deploy:
-  - provider: npm
-    skip_cleanup: true
-    email: tituswormer@gmail.com
-    api_key:
-      secure: LEHVDo4YJSOKNUfWTo7s/tQfkdW26Ri2eFVEbbVC/uECCKTX4UpU/FJ/0EpFvEwZDcnIIwSx2pwLV2SINc2knh21lsslcrlOufVxBMMX2BXQXR4I4kvMTVjUjPb/2bdgB/iAVIHqzKytm0SvaZJ014cbJPODwhKN2BQfxqYpoMd1g1eEAQ/RUywlpXhn+Sb2Wne08GBN2nTNrKsUWOIIWWqo0MJd8TqNkFlZZHwiOrdLQv2KlVulqcz1UhGS4fTxMpz6YsBrypmkqRAy4ziw5M/oWO7e5kSHjyjNkx6dwZ7cioqXTaQS9tpfCyAZT3i/nzTgi/D04Gr2aMklpa6gGf3OWcOuZaHj1UdMKapY8FOaesxW0GIQaPKFMNNkexyqDGMFhQHANVJrWctekDnCX+YJY4oijyosw5glPsdDkPArugrw3f5BMmM/1vT9nlmG4qlsCSsZoAzLZfdHXXZCYQrW921jels3GIAvqO8vBdo+1F68hMRXvb1K/i3uieQ14M1E8jrUv/d7Sc+mZyih4/cJL9Xnrh39dRqMoDtfm8TyyWYBSSx9dR+4Ab/x5ypZAIckbvzkD+2Q5JfCWBwmSmlaeFgy5l1gmBAOk3KEjjgjH+yU/If9fbYqnDmPZMKvrQaSOa/b8xKQ+peN6F4J+3YO1tcQvspgOXF1fHt/wRQ=
-    on:
-      tags: true
-      node: '9.0'
-  - provider: releases
-    skip_cleanup: true
-    api_key:
-      secure: aFDY5DKEHcjD1DGrdM/P+piC2auZvL7nvZzJw3WShjenxsozoR0IYSPkRLHSJFA2+upruJk7/Fr/IwyAFNF3xntHWieaq5DdHcSccSIYHdIdGmlUpmudo7b8+9AgxMOqFNFbZvQwaE4FI6AVT4n4O6Es0ebGXOv6/Aho0JdR9mEi5TtrFZt2om6MHOrTF/iiUDaMONKH4WfXgG+ZC8YmtUzWMkqy7jRvU5ioMq4RR7N7cufDHcZqTbbc2haoOKccQ/iU4gOz5R1CtEoaxW8OyD59gdbNve/4zDS2BjqRdKpLySsnB69+Kyqry+5Vh+S2jSSw/c/WCKWn5cFJwfLiwGOQvJD3Sjh4DPN0+WnPfO8TE95aZcSfjr10cwjcArrwZCM9iNJaOWIg8XGkZjBgmrWCdNwWuEve/s/kowyoXBlX9rZL8wW2S5UjsI/EtCZ3Fg67fpPowRgztDhEcHkLOEdo8JaS/waStj5fmOViwCfEnFPrb9ORypD9i6fa3ZZz23upyzXmV54/lUvt/gDSH6nF+434FQTWViOeQhoNTl2tU9ycmRr0P+1JL2fICArDqP/TlsntRynCAgZ1IKdKyKudq6jShSvHO2oCTTN3Wa0M58lBp1gadr1hzTs3/dFc/C/UarOJNXrrnRxmp/lCTqWrtVRvDVcCkAba34u/DfI=
-    file:
-      - "unified-message-control.js"
-      - "unified-message-control.min.js"
-    on:
-      tags: true
-      node: '9.0'
+  provider: releases
+  skip_cleanup: true
+  api_key:
+    secure: aFDY5DKEHcjD1DGrdM/P+piC2auZvL7nvZzJw3WShjenxsozoR0IYSPkRLHSJFA2+upruJk7/Fr/IwyAFNF3xntHWieaq5DdHcSccSIYHdIdGmlUpmudo7b8+9AgxMOqFNFbZvQwaE4FI6AVT4n4O6Es0ebGXOv6/Aho0JdR9mEi5TtrFZt2om6MHOrTF/iiUDaMONKH4WfXgG+ZC8YmtUzWMkqy7jRvU5ioMq4RR7N7cufDHcZqTbbc2haoOKccQ/iU4gOz5R1CtEoaxW8OyD59gdbNve/4zDS2BjqRdKpLySsnB69+Kyqry+5Vh+S2jSSw/c/WCKWn5cFJwfLiwGOQvJD3Sjh4DPN0+WnPfO8TE95aZcSfjr10cwjcArrwZCM9iNJaOWIg8XGkZjBgmrWCdNwWuEve/s/kowyoXBlX9rZL8wW2S5UjsI/EtCZ3Fg67fpPowRgztDhEcHkLOEdo8JaS/waStj5fmOViwCfEnFPrb9ORypD9i6fa3ZZz23upyzXmV54/lUvt/gDSH6nF+434FQTWViOeQhoNTl2tU9ycmRr0P+1JL2fICArDqP/TlsntRynCAgZ1IKdKyKudq6jShSvHO2oCTTN3Wa0M58lBp1gadr1hzTs3/dFc/C/UarOJNXrrnRxmp/lCTqWrtVRvDVcCkAba34u/DfI=
+  file:
+    - "unified-message-control.js"
+    - "unified-message-control.min.js"
+  on:
+    tags: true
+    node: '9.0'
