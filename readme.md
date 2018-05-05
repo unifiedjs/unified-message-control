@@ -23,23 +23,23 @@ Say we have the following file, `example.md`:
 And our script, `example.js`, looks as follows:
 
 ```javascript
-var vfile = require('to-vfile');
-var report = require('vfile-reporter');
-var remark = require('remark');
-var control = require('unified-message-control');
-var mdastMarker = require('mdast-comment-marker');
+var vfile = require('to-vfile')
+var report = require('vfile-reporter')
+var remark = require('remark')
+var control = require('unified-message-control')
+var mdastMarker = require('mdast-comment-marker')
 
 remark()
   .use(warn)
   .use(control, {name: 'foo', marker: mdastMarker, test: 'html'})
-  .process(vfile.readSync('example.md'), function (err, file) {
-    console.error(report(err || file));
-  });
+  .process(vfile.readSync('example.md'), function(err, file) {
+    console.error(report(err || file))
+  })
 
 function warn() {
-  return function (tree, file) {
-    file.message('Whoops!', tree.children[1], 'foo:thing');
-  };
+  return function(tree, file) {
+    file.message('Whoops!', tree.children[1], 'foo:thing')
+  }
 }
 ```
 

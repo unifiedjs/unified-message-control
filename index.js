@@ -1,107 +1,107 @@
-'use strict';
+'use strict'
 
-var trim = require('trim');
-var location = require('vfile-location');
-var visit = require('unist-util-visit');
+var trim = require('trim')
+var location = require('vfile-location')
+var visit = require('unist-util-visit')
 
 /* Map of allowed verbs. */
 var ALLOWED_VERBS = {
   enable: true,
   disable: true,
   ignore: true
-};
+}
 
-module.exports = messageControl;
+module.exports = messageControl
 
 function messageControl(options) {
-  var name = options && options.name;
-  var marker = options && options.marker;
-  var test = options && options.test;
-  var sources;
-  var known;
-  var reset;
-  var enable;
-  var disable;
+  var name = options && options.name
+  var marker = options && options.marker
+  var test = options && options.test
+  var sources
+  var known
+  var reset
+  var enable
+  var disable
 
   if (!name) {
-    throw new Error('Expected `name` in `options`, got `' + name + '`');
+    throw new Error('Expected `name` in `options`, got `' + name + '`')
   }
 
   if (!marker) {
-    throw new Error('Expected `name` in `options`, got `' + name + '`');
+    throw new Error('Expected `name` in `options`, got `' + name + '`')
   }
 
   if (!test) {
-    throw new Error('Expected `test` in `options`, got `' + test + '`');
+    throw new Error('Expected `test` in `options`, got `' + test + '`')
   }
 
-  known = options.known;
-  reset = options.reset;
-  enable = options.enable || [];
-  disable = options.disable || [];
-  sources = options.source;
+  known = options.known
+  reset = options.reset
+  enable = options.enable || []
+  disable = options.disable || []
+  sources = options.source
 
   if (!sources) {
-    sources = [name];
+    sources = [name]
   } else if (typeof sources === 'string') {
-    sources = [sources];
+    sources = [sources]
   }
 
-  return transformer;
+  return transformer
 
   function transformer(tree, file) {
-    var toOffset = location(file).toOffset;
-    var initial = !reset;
-    var gaps = detectGaps(tree, file);
-    var scope = {};
-    var globals = [];
+    var toOffset = location(file).toOffset
+    var initial = !reset
+    var gaps = detectGaps(tree, file)
+    var scope = {}
+    var globals = []
 
-    visit(tree, test, visitor);
+    visit(tree, test, visitor)
 
-    file.messages = file.messages.filter(filter);
+    file.messages = file.messages.filter(filter)
 
     function visitor(node, position, parent) {
-      var mark = marker(node);
-      var ruleIds;
-      var ruleId;
-      var verb;
-      var index;
-      var length;
-      var next;
-      var pos;
-      var tail;
+      var mark = marker(node)
+      var ruleIds
+      var ruleId
+      var verb
+      var index
+      var length
+      var next
+      var pos
+      var tail
 
       if (!mark || mark.name !== options.name) {
-        return;
+        return
       }
 
-      ruleIds = mark.attributes.split(/\s/g);
-      verb = ruleIds.shift();
-      next = parent.children[position + 1];
-      pos = mark.node.position && mark.node.position.start;
-      tail = next && next.position && next.position.end;
+      ruleIds = mark.attributes.split(/\s/g)
+      verb = ruleIds.shift()
+      next = parent.children[position + 1]
+      pos = mark.node.position && mark.node.position.start
+      tail = next && next.position && next.position.end
 
       if (!verb || !ALLOWED_VERBS[verb] === true) {
         file.fail(
           'Unknown keyword `' +
             verb +
             '`: expected ' +
-            '`\'enable\'`, `\'disable\'`, or `\'ignore\'`',
+            "`'enable'`, `'disable'`, or `'ignore'`",
           mark.node
-        );
+        )
       }
 
-      length = ruleIds.length;
-      index = -1;
+      length = ruleIds.length
+      index = -1
 
       while (++index < length) {
-        ruleId = ruleIds[index];
+        ruleId = ruleIds[index]
 
         if (isKnown(ruleId, verb, mark.node)) {
-          toggle(pos, verb === 'enable', ruleId);
+          toggle(pos, verb === 'enable', ruleId)
 
           if (verb === 'ignore') {
-            toggle(tail, true, ruleId);
+            toggle(tail, true, ruleId)
           }
         }
       }
@@ -109,101 +109,101 @@ function messageControl(options) {
       /* Apply to all rules. */
       if (!length) {
         if (verb === 'ignore') {
-          toggle(pos, false);
-          toggle(tail, true);
+          toggle(pos, false)
+          toggle(tail, true)
         } else {
-          toggle(pos, verb === 'enable');
-          reset = verb !== 'enable';
+          toggle(pos, verb === 'enable')
+          reset = verb !== 'enable'
         }
       }
     }
 
     function filter(message) {
-      var gapIndex = gaps.length;
-      var ruleId = message.ruleId;
-      var ranges = scope[ruleId];
-      var pos;
+      var gapIndex = gaps.length
+      var ruleId = message.ruleId
+      var ranges = scope[ruleId]
+      var pos
 
       /* Keep messages from a different source. */
       if (!message.source || sources.indexOf(message.source) === -1) {
-        return true;
+        return true
       }
 
       /* We only ignore messages if they‘re disabled,
        * *not* when they’re not in the document. */
       if (!message.line) {
-        message.line = 1;
+        message.line = 1
       }
 
       if (!message.column) {
-        message.column = 1;
+        message.column = 1
       }
 
       /* Check whether the warning is inside a gap. */
-      pos = toOffset(message);
+      pos = toOffset(message)
 
       while (gapIndex--) {
         if (gaps[gapIndex].start <= pos && gaps[gapIndex].end > pos) {
-          return false;
+          return false
         }
       }
 
       /* Check whether allowed by specific and global states. */
-      return check(message, ranges, ruleId) && check(message, globals);
+      return check(message, ranges, ruleId) && check(message, globals)
     }
 
     /* Helper to check (and possibly warn) if a ruleId is unknown. */
     function isKnown(ruleId, verb, pos) {
-      var result = known ? known.indexOf(ruleId) !== -1 : true;
+      var result = known ? known.indexOf(ruleId) !== -1 : true
 
       if (!result) {
-        file.warn('Unknown rule: cannot ' + verb + ' `\'' + ruleId + '\'`', pos);
+        file.warn('Unknown rule: cannot ' + verb + " `'" + ruleId + "'`", pos)
       }
 
-      return result;
+      return result
     }
 
     /* Get the latest state of a rule. When without `ruleId`, gets global state. */
     function getState(ruleId) {
-      var ranges = ruleId ? scope[ruleId] : globals;
+      var ranges = ruleId ? scope[ruleId] : globals
 
       if (ranges && ranges.length !== 0) {
-        return ranges[ranges.length - 1].state;
+        return ranges[ranges.length - 1].state
       }
 
       if (!ruleId) {
-        return !reset;
+        return !reset
       }
 
       if (reset) {
-        return enable.indexOf(ruleId) !== -1;
+        return enable.indexOf(ruleId) !== -1
       }
 
-      return disable.indexOf(ruleId) === -1;
+      return disable.indexOf(ruleId) === -1
     }
 
     /* Handle a rule. */
     function toggle(pos, state, ruleId) {
-      var markers = ruleId ? scope[ruleId] : globals;
-      var currentState;
-      var previousState;
+      var markers = ruleId ? scope[ruleId] : globals
+      var currentState
+      var previousState
 
       if (!markers) {
-        markers = [];
-        scope[ruleId] = markers;
+        markers = []
+        scope[ruleId] = markers
       }
 
-      previousState = getState(ruleId);
-      currentState = state;
+      previousState = getState(ruleId)
+      currentState = state
 
       if (currentState !== previousState) {
-        markers.push({state: currentState, position: pos});
+        markers.push({state: currentState, position: pos})
       }
 
       /* Toggle all known rules. */
       if (!ruleId) {
         for (ruleId in scope) {
-          toggle(pos, state, ruleId);
+          toggle(pos, state, ruleId)
         }
       }
     }
@@ -211,16 +211,16 @@ function messageControl(options) {
     /* Check all `ranges` for `message`. */
     function check(message, ranges, id) {
       /* Check the state at the message's position. */
-      var index = ranges && ranges.length;
-      var length = -1;
-      var range;
+      var index = ranges && ranges.length
+      var length = -1
+      var range
 
       while (--index > length) {
-        range = ranges[index];
+        range = ranges[index]
 
         /* istanbul ignore if - generated marker. */
         if (!range.position || !range.position.line || !range.position.column) {
-          continue;
+          continue
         }
 
         if (
@@ -228,30 +228,30 @@ function messageControl(options) {
           (range.position.line === message.line &&
             range.position.column < message.column)
         ) {
-          return range.state === true;
+          return range.state === true
         }
       }
 
       /* The first marker ocurred after the first
        * message, so we check the initial state. */
       if (!id) {
-        return initial || reset;
+        return initial || reset
       }
 
-      return reset ? enable.indexOf(id) !== -1 : disable.indexOf(id) === -1;
+      return reset ? enable.indexOf(id) !== -1 : disable.indexOf(id) === -1
     }
   }
 }
 
 /* Detect gaps in `ast`. */
 function detectGaps(tree, file) {
-  var lastNode = tree.children[tree.children.length - 1];
-  var offset = 0;
-  var isGap = false;
-  var gaps = [];
+  var lastNode = tree.children[tree.children.length - 1]
+  var offset = 0
+  var isGap = false
+  var gaps = []
 
   /* Find all gaps. */
-  visit(tree, one);
+  visit(tree, one)
 
   /* Get the end of the document.
    * This detects if the last node was the last node.
@@ -264,41 +264,41 @@ function detectGaps(tree, file) {
     offset === lastNode.position.end.offset &&
     trim(file.toString().slice(offset)) !== ''
   ) {
-    update();
+    update()
 
     update(
       tree && tree.position && tree.position.end && tree.position.end.offset - 1
-    );
+    )
   }
 
-  return gaps;
+  return gaps
 
   function one(node) {
-    var pos = node.position;
+    var pos = node.position
 
-    update(pos && pos.start && pos.start.offset);
+    update(pos && pos.start && pos.start.offset)
 
     if (!node.children) {
-      update(pos && pos.end && pos.end.offset);
+      update(pos && pos.end && pos.end.offset)
     }
   }
 
   /* Detect a new position. */
   function update(latest) {
     if (latest === null || latest === undefined) {
-      isGap = true;
-      return;
+      isGap = true
+      return
     }
 
     if (offset >= latest) {
-      return;
+      return
     }
 
     if (isGap) {
-      gaps.push({start: offset, end: latest});
-      isGap = false;
+      gaps.push({start: offset, end: latest})
+      isGap = false
     }
 
-    offset = latest;
+    offset = latest
   }
 }
