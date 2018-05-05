@@ -5,3 +5,4 @@ coverage/
 node_modules/
 unified-message-control.js
 unified-message-control.min.js
+yarn.lock
