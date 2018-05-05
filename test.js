@@ -4,7 +4,7 @@ var test = require('tape');
 var remark = require('remark');
 var toc = require('remark-toc');
 var mdastMarker = require('mdast-comment-marker');
-var control = require('./');
+var control = require('.');
 
 test('control()', function (t) {
   t.throws(function () {
