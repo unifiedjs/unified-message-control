@@ -261,7 +261,7 @@ function detectGaps(tree, file) {
     lastNode.position &&
     lastNode.position.end &&
     offset === lastNode.position.end.offset &&
-    file.toString().slice(offset).trim() !== ''
+    trim(file.toString().slice(offset)) !== ''
   ) {
     update()
 
@@ -300,4 +300,11 @@ function detectGaps(tree, file) {
 
     offset = latest
   }
+}
+
+function trim(str) {
+  if (String.prototype.trim) {
+    return str.trim()
+  }
+  return str.replace(/^\s*|\s*$/g, '')
 }
