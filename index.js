@@ -1,6 +1,5 @@
 'use strict'
 
-var trim = require('trim')
 var location = require('vfile-location')
 var visit = require('unist-util-visit')
 
@@ -262,7 +261,7 @@ function detectGaps(tree, file) {
     lastNode.position &&
     lastNode.position.end &&
     offset === lastNode.position.end.offset &&
-    trim(file.toString().slice(offset)) !== ''
+    file.toString().slice(offset).trim() !== ''
   ) {
     update()
 
