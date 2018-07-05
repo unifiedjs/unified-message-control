@@ -21,7 +21,6 @@
     "index.js"
   ],
   "dependencies": {
-    "trim": "0.0.1",
     "unist-util-visit": "^1.0.0",
     "vfile-location": "^2.0.0"
   },

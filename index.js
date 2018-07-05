@@ -1,6 +1,5 @@
 'use strict'
 
-var trim = require('trim')
 var location = require('vfile-location')
 var visit = require('unist-util-visit')
 
@@ -301,4 +300,8 @@ function detectGaps(tree, file) {
 
     offset = latest
   }
+}
+
+function trim(str) {
+  return str.replace(/^\s*|\s*$/g, '')
 }
