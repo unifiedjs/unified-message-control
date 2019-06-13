@@ -3,13 +3,6 @@
 var location = require('vfile-location')
 var visit = require('unist-util-visit')
 
-/* Map of allowed verbs. */
-var ALLOWED_VERBS = {
-  enable: true,
-  disable: true,
-  ignore: true
-}
-
 module.exports = messageControl
 
 function messageControl(options) {
@@ -27,7 +20,7 @@ function messageControl(options) {
   }
 
   if (!marker) {
-    throw new Error('Expected `name` in `options`, got `' + name + '`')
+    throw new Error('Expected `marker` in `options`, got `' + name + '`')
   }
 
   if (!test) {
@@ -80,7 +73,7 @@ function messageControl(options) {
       pos = mark.node.position && mark.node.position.start
       tail = next && next.position && next.position.end
 
-      if (!verb || !ALLOWED_VERBS[verb] === true) {
+      if (verb !== 'enable' && verb !== 'disable' && verb !== 'ignore') {
         file.fail(
           'Unknown keyword `' +
             verb +
@@ -105,7 +98,7 @@ function messageControl(options) {
         }
       }
 
-      /* Apply to all rules. */
+      // Apply to all rules.
       if (!length) {
         if (verb === 'ignore') {
           toggle(pos, false)
@@ -123,13 +116,13 @@ function messageControl(options) {
       var ranges = scope[ruleId]
       var pos
 
-      /* Keep messages from a different source. */
+      // Keep messages from a different source.
       if (!message.source || sources.indexOf(message.source) === -1) {
         return true
       }
 
-      /* We only ignore messages if they‘re disabled,
-       * *not* when they’re not in the document. */
+      // We only ignore messages if they‘re disabled, *not* when they’re not in
+      // the document.
       if (!message.line) {
         message.line = 1
       }
@@ -138,7 +131,7 @@ function messageControl(options) {
         message.column = 1
       }
 
-      /* Check whether the warning is inside a gap. */
+      // Check whether the warning is inside a gap.
       pos = toOffset(message)
 
       while (gapIndex--) {
@@ -147,11 +140,11 @@ function messageControl(options) {
         }
       }
 
-      /* Check whether allowed by specific and global states. */
+      // Check whether allowed by specific and global states.
       return check(message, ranges, ruleId) && check(message, globals)
     }
 
-    /* Helper to check (and possibly warn) if a ruleId is unknown. */
+    // Helper to check (and possibly warn) if a `ruleId` is unknown.
     function isKnown(ruleId, verb, pos) {
       var result = known ? known.indexOf(ruleId) !== -1 : true
 
@@ -162,7 +155,8 @@ function messageControl(options) {
       return result
     }
 
-    /* Get the latest state of a rule. When without `ruleId`, gets global state. */
+    // Get the latest state of a rule.
+    // When without `ruleId`, gets global state.
     function getState(ruleId) {
       var ranges = ruleId ? scope[ruleId] : globals
 
@@ -181,7 +175,7 @@ function messageControl(options) {
       return disable.indexOf(ruleId) === -1
     }
 
-    /* Handle a rule. */
+    // Handle a rule.
     function toggle(pos, state, ruleId) {
       var markers = ruleId ? scope[ruleId] : globals
       var currentState
@@ -199,7 +193,7 @@ function messageControl(options) {
         markers.push({state: currentState, position: pos})
       }
 
-      /* Toggle all known rules. */
+      // Toggle all known rules.
       if (!ruleId) {
         for (ruleId in scope) {
           toggle(pos, state, ruleId)
@@ -207,9 +201,9 @@ function messageControl(options) {
       }
     }
 
-    /* Check all `ranges` for `message`. */
+    // Check all `ranges` for `message`.
     function check(message, ranges, id) {
-      /* Check the state at the message's position. */
+      // Check the state at the message’s position.
       var index = ranges && ranges.length
       var length = -1
       var range
@@ -217,7 +211,7 @@ function messageControl(options) {
       while (--index > length) {
         range = ranges[index]
 
-        /* istanbul ignore if - generated marker. */
+        /* istanbul ignore if - Generated marker. */
         if (!range.position || !range.position.line || !range.position.column) {
           continue
         }
@@ -231,8 +225,8 @@ function messageControl(options) {
         }
       }
 
-      /* The first marker ocurred after the first
-       * message, so we check the initial state. */
+      // The first marker ocurred after the first message, so we check the
+      // initial state.
       if (!id) {
         return initial || reset
       }
@@ -242,20 +236,20 @@ function messageControl(options) {
   }
 }
 
-/* Detect gaps in `ast`. */
+// Detect gaps in `tree`.
 function detectGaps(tree, file) {
   var lastNode = tree.children[tree.children.length - 1]
   var offset = 0
   var isGap = false
   var gaps = []
 
-  /* Find all gaps. */
+  // Find all gaps.
   visit(tree, one)
 
-  /* Get the end of the document.
-   * This detects if the last node was the last node.
-   * If not, there’s an extra gap between the last node
-   * and the end of the document. */
+  // Get the end of the document.
+  // This detects if the last node was the last node.
+  // If not, there’s an extra gap between the last node and the end of the
+  // document.
   if (
     lastNode &&
     lastNode.position &&
@@ -282,7 +276,7 @@ function detectGaps(tree, file) {
     }
   }
 
-  /* Detect a new position. */
+  // Detect a new position.
   function update(latest) {
     if (latest === null || latest === undefined) {
       isGap = true
