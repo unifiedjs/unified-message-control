@@ -1,16 +1,24 @@
-# unified-message-control [![Build Status][build-badge]][build-status] [![Coverage Status][coverage-badge]][coverage-status] [![Chat][chat-badge]][chat]
+# unified-message-control
+
+[![Build][build-badge]][build]
+[![Coverage][coverage-badge]][coverage]
+[![Downloads][downloads-badge]][downloads]
+[![Size][size-badge]][size]
+[![Sponsors][sponsors-badge]][collective]
+[![Backers][backers-badge]][collective]
+[![Chat][chat-badge]][chat]
 
 Enable, disable, and ignore messages with [**unified**][unified].
 
-## Installation
+## Install
 
 [npm][]:
 
-```bash
+```sh
 npm install unified-message-control
 ```
 
-## Usage
+## Use
 
 Say we have the following file, `example.md`:
 
@@ -22,7 +30,7 @@ Say we have the following file, `example.md`:
 
 And our script, `example.js`, looks as follows:
 
-```javascript
+```js
 var vfile = require('to-vfile')
 var report = require('vfile-reporter')
 var remark = require('remark')
@@ -53,13 +61,13 @@ example.md: no issues found
 
 ### `unified.use(control, options)`
 
-Let comment markers control messages from a certain sources.
+Let comment markers control messages from certain sources.
 
 ##### Options
 
 ###### `options.name`
 
-`string` — Name of markers that can control the message sources.
+Name of markers that can control the message sources (`string`).
 
 For example, `{name: 'alpha'}` controls `alpha` markers:
 
@@ -67,24 +75,20 @@ For example, `{name: 'alpha'}` controls `alpha` markers:
 <!--alpha ignore-->
 ```
 
-###### `options.marker`
-
-`function` — function that returns a [comment marker object][marker]
-for a matched comment, and `null` for a non-matched comment.
-
 ###### `options.test`
 
-(`Function`, `string`, `Object`, or `Array.<Test>`)
-—  When `string`, works like passing `function (node) {return
-node.type === test}`.
-When `array`, checks any one of the subtests pass.
-When `object`, checks that all keys in `test` are in `node`,
-and that they have (strictly) equal values
+Test for possible markers (`Function`, `string`, `Object`, or `Array.<Test>`).
+See [`unist-util-is`][test].
+
+###### `options.marker`
+
+Parse a possible marker to a [comment marker object][marker] (`Function`).
+If the possible marker actually isn’t a marker, should return `null`.
 
 ###### `options.known`
 
-`Array.<string>`, optional — List of allowed `ruleId`s.  When given, a warning
-is shown when someone tries to control an unknown rule.
+List of allowed `ruleId`s (`Array.<string>`, optional).
+When given, a warning is shown when someone tries to control an unknown rule.
 
 For example, `{name: 'alpha', known: ['bravo']}` results in a warning if
 `charlie` is configured:
@@ -95,35 +99,34 @@ For example, `{name: 'alpha', known: ['bravo']}` results in a warning if
 
 ###### `options.reset`
 
-`boolean`, default: `false` — Whether to treat all messages as turned off
-initially.
+Whether to treat all messages as turned off initially (`boolean`, default:
+`false`).
 
 ###### `options.enable`
 
-`Array.<string>`, optional — List of allowed `ruleId`s used when `reset: true`
-to initially turn on.  By default (`reset: false`), all rules are turned on.
+List of `ruleId`s to initially turn on if `reset: true`
+(`Array.<string>`, optional).
+By default (`reset: false`), all rules are turned on.
 
 ###### `options.disable`
 
-`Array.<string>`, optional — List of disallowed `ruleId`s used when
-`reset: false` to initially turn off.
+List of `ruleId`s to turn on if `reset: false` (`Array.<string>`, optional).
 
 ###### `options.sources`
 
-`string` or `Array.<string>`, optional — One or more sources which markers by
-the specified `name` can control.  Defaults to `options.name`.
+Sources that can be controlled with `name` markers (`string` or
+`Array.<string>`, default: `options.name`)
 
 ### Markers
 
 ###### `disable`
 
-The **disable** marker turns off all messages of the given rule
-identifiers.  When without identifiers, all messages are turned
-off.
+The **disable** keyword turns off all messages of the given rule identifiers.
+When without identifiers, all messages are turned off.
 
 For example, to turn off certain messages:
 
-```md
+```markdown
 <!--lint disable list-item-bullet-indent strong-marker-->
 
 *   **foo**
@@ -135,13 +138,12 @@ A paragraph, and now another list.
 
 ###### `enable`
 
-The **enable** marker turns on all messages of the given rule
-identifiers.  When without identifiers, all messages are turned
-on.
+The **enable** keyword turns on all messages of the given rule identifiers.
+When without identifiers, all messages are turned on.
 
 For example, to enable certain messages:
 
-```md
+```markdown
 <!--lint enable strong-marker-->
 
 **foo** and __bar__.
@@ -149,11 +151,11 @@ For example, to enable certain messages:
 
 ###### `ignore`
 
-The **ignore** marker turns off all messages of the given rule
-identifiers occurring in the following node.  When without
-identifiers, all messages are turned off.
+The **ignore** keyword turns off all messages of the given `ruleId`s occurring
+in the following node.
+When without `ruleId`s, all messages are ignored.
 
-After the end of the following node, messages are allowed again.
+After the end of the following node, messages are turned on again.
 
 For example, to turn off certain messages for the next node:
 
@@ -166,11 +168,13 @@ For example, to turn off certain messages for the next node:
 
 ## Contribute
 
-See [`contributing.md` in `unified/unified`][contributing] for ways to get
-started.
+See [`contributing.md`][contributing] in [`unifiedjs/.github`][health] for ways
+to get started.
+See [`support.md`][support] for ways to get help.
 
-This organisation has a [Code of Conduct][coc].  By interacting with this
-repository, organisation, or community you agree to abide by its terms.
+This project has a [Code of Conduct][coc].
+By interacting with this repository, organisation, or community you agree to
+abide by its terms.
 
 ## License
 
@@ -180,26 +184,46 @@ repository, organisation, or community you agree to abide by its terms.
 
 [build-badge]: https://img.shields.io/travis/unifiedjs/unified-message-control.svg
 
-[build-status]: https://travis-ci.org/unifiedjs/unified-message-control
+[build]: https://travis-ci.org/unifiedjs/unified-message-control
 
 [coverage-badge]: https://img.shields.io/codecov/c/github/unifiedjs/unified-message-control.svg
 
-[coverage-status]: https://codecov.io/github/unifiedjs/unified-message-control
+[coverage]: https://codecov.io/github/unifiedjs/unified-message-control
 
-[chat-badge]: https://img.shields.io/gitter/room/unifiedjs/Lobby.svg
+[downloads-badge]: https://img.shields.io/npm/dm/unified-message-control.svg
 
-[chat]: https://gitter.im/unifiedjs/Lobby
+[downloads]: https://www.npmjs.com/package/unified-message-control
+
+[size-badge]: https://img.shields.io/bundlephobia/minzip/unified-message-control.svg
+
+[size]: https://bundlephobia.com/result?p=unified-message-control
+
+[sponsors-badge]: https://opencollective.com/unified/sponsors/badge.svg
+
+[backers-badge]: https://opencollective.com/unified/backers/badge.svg
+
+[collective]: https://opencollective.com/unified
+
+[chat-badge]: https://img.shields.io/badge/join%20the%20community-on%20spectrum-7b16ff.svg
+
+[chat]: https://spectrum.chat/unified
+
+[npm]: https://docs.npmjs.com/cli/install
+
+[health]: https://github.com/unifiedjs/.github
+
+[contributing]: https://github.com/unifiedjs/.github/blob/master/contributing.md
+
+[support]: https://github.com/unifiedjs/.github/blob/master/support.md
+
+[coc]: https://github.com/unifiedjs/.github/blob/master/code-of-conduct.md
 
 [license]: license
 
 [author]: https://wooorm.com
 
-[npm]: https://docs.npmjs.com/cli/install
-
 [marker]: https://github.com/syntax-tree/mdast-comment-marker#marker
 
 [unified]: https://github.com/unifiedjs/unified
 
-[contributing]: https://github.com/unifiedjs/unified/blob/master/contributing.md
-
-[coc]: https://github.com/unifiedjs/unified/blob/master/code-of-conduct.md
+[test]: https://github.com/syntax-tree/unist-util-is#api
