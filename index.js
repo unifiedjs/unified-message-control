@@ -20,7 +20,7 @@ function messageControl(options) {
   }
 
   if (!marker) {
-    throw new Error('Expected `marker` in `options`, got `' + name + '`')
+    throw new Error('Expected `marker` in `options`, got `' + marker + '`')
   }
 
   if (!test) {

@@ -7,11 +7,35 @@ var mdastMarker = require('mdast-comment-marker')
 var control = require('.')
 
 test('control()', function(t) {
-  t.throws(function() {
-    remark()
-      .use(control)
-      .freeze()
-  }, /Expected `name` in `options`, got `undefined`/)
+  t.throws(
+    function() {
+      remark()
+        .use(control)
+        .freeze()
+    },
+    /Expected `name` in `options`, got `undefined`/,
+    'should throw without `name`'
+  )
+
+  t.throws(
+    function() {
+      remark()
+        .use(control, {name: 'foo'})
+        .freeze()
+    },
+    /Expected `marker` in `options`, got `undefined`/,
+    'should throw without marker'
+  )
+
+  t.throws(
+    function() {
+      remark()
+        .use(control, {name: 'foo', marker: function() {}})
+        .freeze()
+    },
+    /Expected `test` in `options`, got `undefined`/,
+    'should throw without test'
+  )
 
   remark()
     .use(function() {
