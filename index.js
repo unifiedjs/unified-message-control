@@ -23,10 +23,6 @@ function messageControl(options) {
     throw new Error('Expected `marker` in `options`, got `' + marker + '`')
   }
 
-  if (!test) {
-    throw new Error('Expected `test` in `options`, got `' + test + '`')
-  }
-
   known = options.known
   reset = options.reset
   enable = options.enable || []

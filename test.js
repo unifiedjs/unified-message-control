@@ -27,15 +27,11 @@ test('control()', function(t) {
     'should throw without marker'
   )
 
-  t.throws(
-    function() {
-      remark()
-        .use(control, {name: 'foo', marker: function() {}})
-        .freeze()
-    },
-    /Expected `test` in `options`, got `undefined`/,
-    'should throw without test'
-  )
+  t.doesNotThrow(function() {
+    remark()
+      .use(control, {name: 'foo', marker: function() {}})
+      .freeze()
+  }, 'should *not* throw without test')
 
   remark()
     .use(function() {
