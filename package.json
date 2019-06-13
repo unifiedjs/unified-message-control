@@ -12,9 +12,9 @@
   ],
   "repository": "unifiedjs/unified-message-control",
   "bugs": "https://github.com/unifiedjs/unified-message-control/issues",
-  "author": "Titus Wormer <tituswormer@gmail.com> (http://wooorm.com)",
+  "author": "Titus Wormer <tituswormer@gmail.com> (https://wooorm.com)",
   "contributors": [
-    "Titus Wormer <tituswormer@gmail.com> (http://wooorm.com)",
+    "Titus Wormer <tituswormer@gmail.com> (https://wooorm.com)",
     "Christian Murphy <christian.murphy.42@gmail.com> (https://github.com/ChristianMurphy)"
   ],
   "files": [
