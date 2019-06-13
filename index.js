@@ -149,7 +149,10 @@ function messageControl(options) {
       var result = known ? known.indexOf(ruleId) !== -1 : true
 
       if (!result) {
-        file.warn('Unknown rule: cannot ' + verb + " `'" + ruleId + "'`", pos)
+        file.message(
+          'Unknown rule: cannot ' + verb + " `'" + ruleId + "'`",
+          pos
+        )
       }
 
       return result
