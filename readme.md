@@ -190,7 +190,7 @@ repository, organisation, or community you agree to abide by its terms.
 
 [chat]: https://gitter.im/unifiedjs/Lobby
 
-[license]: LICENSE
+[license]: license
 
 [author]: https://wooorm.com
 
