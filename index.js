@@ -216,7 +216,7 @@ function messageControl(options) {
         if (
           range.position.line < message.line ||
           (range.position.line === message.line &&
-            range.position.column < message.column)
+            range.position.column <= message.column)
         ) {
           return range.state === true
         }
