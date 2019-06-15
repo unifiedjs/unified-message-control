@@ -177,7 +177,6 @@ function messageControl(options) {
     // Handle a rule.
     function toggle(pos, state, ruleId) {
       var markers = ruleId ? scope[ruleId] : globals
-      var currentState
       var previousState
 
       if (!markers) {
@@ -186,10 +185,9 @@ function messageControl(options) {
       }
 
       previousState = getState(ruleId)
-      currentState = state
 
-      if (currentState !== previousState) {
-        markers.push({state: currentState, position: pos})
+      if (state !== previousState) {
+        markers.push({state: state, position: pos})
       }
 
       // Toggle all known rules.
