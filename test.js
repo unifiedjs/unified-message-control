@@ -647,5 +647,95 @@ test('control()', function(t) {
       )
     })
 
+  remark()
+    .use(function() {
+      var transformer = control({
+        name: 'foo',
+        marker: mdastMarker,
+        test: 'html'
+      })
+
+      return function(tree, file) {
+        file.message('Error', {line: 1, column: 1}, 'foo:bar')
+
+        transformer(tree, file)
+      }
+    })
+    .process('<!--foo disable bar-->\n', function(err, file) {
+      t.deepEqual(
+        [err].concat(file.messages.map(String)),
+        [null],
+        'should disable messages at the start of a marker'
+      )
+    })
+
+  remark()
+    .use(function() {
+      var transformer = control({
+        name: 'foo',
+        marker: mdastMarker,
+        test: 'html',
+        reset: true
+      })
+
+      return function(tree, file) {
+        file.message('Error', {line: 1, column: 1}, 'foo:bar')
+
+        transformer(tree, file)
+      }
+    })
+    .process('<!--foo enable-->\n', function(err, file) {
+      t.deepEqual(
+        [err].concat(file.messages.map(String)),
+        [null, '1:1: Error'],
+        'should enable messages at the start of a marker'
+      )
+    })
+
+  remark()
+    .use(function() {
+      var transformer = control({
+        name: 'foo',
+        marker: mdastMarker,
+        test: 'html'
+      })
+
+      return function(tree, file) {
+        file.message('Error', 'foo:bar')
+
+        transformer(tree, file)
+      }
+    })
+    .process('<!--foo disable bar-->\n', function(err, file) {
+      t.deepEqual(
+        [err].concat(file.messages.map(String)),
+        [null],
+        'should disable messages without positional info (at the start of a document)'
+      )
+    })
+
+  remark()
+    .use(function() {
+      var transformer = control({
+        name: 'foo',
+        marker: mdastMarker,
+        test: 'html',
+        reset: true
+      })
+
+      return function(tree, file) {
+        file.message('Error', 'foo:bar')
+
+        transformer(tree, file)
+      }
+    })
+    .process('<!--foo enable-->\n', function(err, file) {
+      t.deepEqual(
+        [err].concat(file.messages.map(String)),
+        [null, '1:1: Error'],
+        'should enable messages without positional info (at the start of a document)'
+      )
+    })
+
   t.end()
 })

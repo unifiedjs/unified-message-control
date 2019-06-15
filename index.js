@@ -82,26 +82,26 @@ function messageControl(options) {
       length = ruleIds.length
       index = -1
 
-      while (++index < length) {
-        ruleId = ruleIds[index]
-
-        if (isKnown(ruleId, verb, mark.node)) {
-          toggle(pos, verb === 'enable', ruleId)
-
-          if (verb === 'ignore') {
-            toggle(tail, true, ruleId)
-          }
-        }
-      }
-
       // Apply to all rules.
-      if (!length) {
+      if (length === 0) {
         if (verb === 'ignore') {
           toggle(pos, false)
           toggle(tail, true)
         } else {
           toggle(pos, verb === 'enable')
           reset = verb !== 'enable'
+        }
+      } else {
+        while (++index < length) {
+          ruleId = ruleIds[index]
+
+          if (isKnown(ruleId, verb, mark.node)) {
+            toggle(pos, verb === 'enable', ruleId)
+
+            if (verb === 'ignore') {
+              toggle(tail, true, ruleId)
+            }
+          }
         }
       }
     }
@@ -177,7 +177,6 @@ function messageControl(options) {
     // Handle a rule.
     function toggle(pos, state, ruleId) {
       var markers = ruleId ? scope[ruleId] : globals
-      var currentState
       var previousState
 
       if (!markers) {
@@ -186,10 +185,9 @@ function messageControl(options) {
       }
 
       previousState = getState(ruleId)
-      currentState = state
 
-      if (currentState !== previousState) {
-        markers.push({state: currentState, position: pos})
+      if (state !== previousState) {
+        markers.push({state: state, position: pos})
       }
 
       // Toggle all known rules.
@@ -218,7 +216,7 @@ function messageControl(options) {
         if (
           range.position.line < message.line ||
           (range.position.line === message.line &&
-            range.position.column < message.column)
+            range.position.column <= message.column)
         ) {
           return range.state === true
         }
