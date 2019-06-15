@@ -82,26 +82,26 @@ function messageControl(options) {
       length = ruleIds.length
       index = -1
 
-      while (++index < length) {
-        ruleId = ruleIds[index]
-
-        if (isKnown(ruleId, verb, mark.node)) {
-          toggle(pos, verb === 'enable', ruleId)
-
-          if (verb === 'ignore') {
-            toggle(tail, true, ruleId)
-          }
-        }
-      }
-
       // Apply to all rules.
-      if (!length) {
+      if (length === 0) {
         if (verb === 'ignore') {
           toggle(pos, false)
           toggle(tail, true)
         } else {
           toggle(pos, verb === 'enable')
           reset = verb !== 'enable'
+        }
+      } else {
+        while (++index < length) {
+          ruleId = ruleIds[index]
+
+          if (isKnown(ruleId, verb, mark.node)) {
+            toggle(pos, verb === 'enable', ruleId)
+
+            if (verb === 'ignore') {
+              toggle(tail, true, ruleId)
+            }
+          }
         }
       }
     }
