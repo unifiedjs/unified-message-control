@@ -15,12 +15,15 @@
   "author": "Titus Wormer <tituswormer@gmail.com> (https://wooorm.com)",
   "contributors": [
     "Titus Wormer <tituswormer@gmail.com> (https://wooorm.com)",
-    "Christian Murphy <christian.murphy.42@gmail.com> (https://github.com/ChristianMurphy)"
+    "Christian Murphy <christian.murphy.42@gmail.com> (https://github.com/ChristianMurphy)",
+    "Thomas 'zemnmez' Shadwell (https://github.com/zemnmez)"
   ],
   "files": [
     "index.js"
   ],
   "dependencies": {
+    "typescript": "^3.7.4",
+    "unist-util-is": "^4.0.1",
     "unist-util-visit": "^1.0.0",
     "vfile-location": "^2.0.0"
   },
