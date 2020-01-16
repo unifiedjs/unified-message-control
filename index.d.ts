@@ -4,6 +4,7 @@ import unist from 'unist';
 type Null = undefined | null;
 
 declare namespace messageControl {
+    /** a comment marker */
     export interface Marker <N extends unist.Node> {
         /** name of marker */
         name: string
