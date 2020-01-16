@@ -47,7 +47,8 @@
     "build": "npm run build-bundle && npm run build-mangle",
     "test-api": "node test",
     "test-coverage": "nyc --reporter lcov tape test.js",
-    "test": "npm run format && npm run build && npm run test-coverage"
+    "test": "npm run format && npm run build && npm run test-coverage && npm run typecheck",
+    "typecheck": "tsc"
   },
   "nyc": {
     "check-coverage": true,
