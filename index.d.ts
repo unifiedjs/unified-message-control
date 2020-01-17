@@ -95,8 +95,9 @@ declare namespace messageControl {
 // this tslint rule makes no sense to me...
 // if T was any we'd essentially have *zero* typechecking
 // on any Node which is clearly *not* what we want
-// tslint:disable-next-line:no-unnecessary-generics
+
 declare function messageControl<T extends unist.Node>(
+  // tslint:disable-next-line:no-unnecessary-generics
   opts: messageControl.MessageControlOptions<T>
 ): void
 

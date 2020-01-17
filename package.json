@@ -48,8 +48,7 @@
     "lint": "dtslint",
     "test-api": "node test",
     "test-coverage": "nyc --reporter lcov tape test.js",
-    "test": "npm run lint && npm run format && npm run build && npm run test-coverage && npm run typecheck",
-    "typecheck": "tsc"
+    "test": "npm run lint && npm run format && npm run build && npm run test-coverage"
   },
   "nyc": {
     "check-coverage": true,
