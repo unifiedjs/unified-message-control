@@ -1,10 +1,14 @@
-import control from './';
-import { Node } from 'unist';
+/**
+ * This file is purely for typechecking and does not produce code
+ */
+
+import control from 'unified-message-control'
+import {Node} from 'unist'
 
 const opts: control.MessageControlOptions<Node> = {
-    name: 'foo',
-    marker: (n: Node) => null,
-    test: 'html'
+  name: 'foo',
+  marker: (n: Node) => null,
+  test: 'html'
 }
 
-const _ = control(opts)
+control(opts)
