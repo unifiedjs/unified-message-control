@@ -3,6 +3,7 @@
   "rules": {
     "semicolon": false,
     "whitespace": false,
-    "no-unnecessary-generics": false
+    "no-unnecessary-generics": false,
+    "strict-export-declare-modifiers": false
   }
 }
