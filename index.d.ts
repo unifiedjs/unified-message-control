@@ -3,14 +3,11 @@
 import {Test} from 'unist-util-is'
 import * as unist from 'unist'
 
-export {}
-
-type Null = undefined | null
+type Nullish = undefined | null
 
 declare namespace messageControl {
-  export {}
-  /** a comment marker */
-  export interface Marker<N extends unist.Node> {
+  /** A comment marker. */
+  interface Marker<N extends unist.Node> {
     /** name of marker */
     name: string
     /** value after name */
@@ -22,8 +19,8 @@ declare namespace messageControl {
   }
 
   /** parse a possible comment marker node to a Marker */
-  export interface MarkerFn<N extends unist.Node> {
-    (node: N): Marker<N> | Null
+  interface MarkerFn<N extends unist.Node> {
+    (node: N): Marker<N> | Nullish
   }
 
   interface MessageControlOptionsWithReset<T extends unist.Node>
@@ -32,15 +29,15 @@ declare namespace messageControl {
     // to `false`.
     reset: true
     disable?: string[]
-    enable?: undefined
+    enable?: unknown
   }
 
   interface MessageControlOptionsWithoutReset<T extends unist.Node>
     extends BaseMessageControlOptions<T> {
-    reset?: false | Null
+    reset?: false | Nullish
 
-    enable?: string[] | Null
-    disable?: Null
+    enable?: string[] | Nullish
+    disable?: unknown
   }
 
   interface BaseMessageControlOptions<T extends unist.Node> {
@@ -68,18 +65,18 @@ declare namespace messageControl {
      *
      * `<!--alpha ignore charlie-->
      */
-    known?: string[] | Null
+    known?: string[] | Nullish
     /**
      * whether to treat all messages as turned off initially
      * defeaults to false.
      */
-    reset?: boolean | Null
+    reset?: boolean | Nullish
     /**
      * list of `ruleId`s to initially turn on if `reset: true`.
      */
-    enable?: string[] | Null
+    enable?: string[] | Nullish | unknown
     /** list of `ruleId`s to turn off if `reset: false` */
-    disable?: string[] | Null
+    disable?: string[] | Nullish | unknown
     /**
      * Sources that can be controlled with `name` markers.
      * defaults to MessageControlOptions.name
@@ -87,7 +84,7 @@ declare namespace messageControl {
     sources?: string | string[]
   }
 
-  export type MessageControlOptions<T extends unist.Node> =
+  type MessageControlOptions<T extends unist.Node> =
     | MessageControlOptionsWithoutReset<T>
     | MessageControlOptionsWithReset<T>
 }
