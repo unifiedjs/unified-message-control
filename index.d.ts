@@ -92,7 +92,7 @@ declare namespace messageControl {
      * For example, `{name: 'alpha', known: ['bravo']}` results
      * in a warning if `charlie is configured:
      *
-     * `<!--alpha ignore charlie-->
+     * `<!--alpha ignore charlie-->`
      */
     known?: string[]
 
