@@ -1,4 +1,4 @@
-// TypeScript Version: 3.3
+// TypeScript Version: 3.4
 
 import {Node} from 'unist'
 import {VFile} from 'vfile'
@@ -34,9 +34,7 @@ declare namespace messageControl {
   /**
    * Parse a possible comment marker node to a Marker
    */
-  type MarkerParser<N extends Node> = <N extends Node>(
-    node: N
-  ) => Marker<N> | null
+  type MarkerParser<N extends Node> = (node: N) => Marker<N> | null
 
   interface MessageControlOptionsWithReset<T extends Node>
     extends BaseMessageControlOptions<T> {
@@ -112,8 +110,8 @@ declare namespace messageControl {
 /**
  * Enable, disable, and ignore messages with unified.
  */
-declare function messageControl(
-  options?: messageControl.MessageControlOptions<Node>
+declare function messageControl<T extends Node>(
+  options?: messageControl.MessageControlOptions<T>
 ): Transformer
 
 export = messageControl

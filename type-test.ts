@@ -3,8 +3,10 @@
  */
 
 import control from 'unified-message-control'
-import unified, {Attacher} from 'unified'
+import unified from 'unified'
 import {Node} from 'unist'
+import {HTML} from 'mdast'
+import {Element} from 'hast'
 
 // $ExpectError
 control({})
@@ -12,6 +14,18 @@ control({})
 control({
   name: 'foo',
   marker: (n: Node) => null,
+  test: 'html'
+})
+
+control({
+  name: 'foo',
+  marker: (n: Element) => null,
+  test: 'element'
+})
+
+control({
+  name: 'foo',
+  marker: (n: HTML) => null,
   test: 'html'
 })
 
@@ -76,6 +90,18 @@ unified().use(control, {})
 unified().use(control, {
   name: 'foo',
   marker: (n: Node) => null,
+  test: 'html'
+})
+
+unified().use(control, {
+  name: 'foo',
+  marker: (n: Element) => null,
+  test: 'element'
+})
+
+unified().use(control, {
+  name: 'foo',
+  marker: (n: HTML) => null,
   test: 'html'
 })
 
