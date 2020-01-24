@@ -11,28 +11,28 @@ declare namespace messageControl {
    */
   interface Marker<N extends Node> {
     /**
-     * name of marker
+     * Name of marker
      */
     name: string
 
     /**
-     * value after name
+     * Value after name
      */
     attributes: string
 
     /**
-     * parsed attributes
+     * Parsed attributes
      */
     parameters: Record<string, unknown>
 
     /**
-     * reference to given node
+     * Reference to given node
      */
     node: N
   }
 
   /**
-   * parse a possible comment marker node to a Marker
+   * Parse a possible comment marker node to a Marker
    */
   type MarkerParser<N extends Node> = <N extends Node>(
     node: N
@@ -41,12 +41,12 @@ declare namespace messageControl {
   interface MessageControlOptionsWithReset<T extends Node>
     extends BaseMessageControlOptions<T> {
     /**
-     * whether to treat all messages as turned off initially
+     * Whether to treat all messages as turned off initially
      */
     reset: true
 
     /**
-     * list of `ruleId`s to initially turn on.
+     * List of `ruleId`s to initially turn on.
      */
     enable?: string[]
   }
@@ -54,12 +54,12 @@ declare namespace messageControl {
   interface MessageControlOptionsWithoutReset<T extends Node>
     extends BaseMessageControlOptions<T> {
     /**
-     * whether to treat all messages as turned off initially
+     * Whether to treat all messages as turned off initially
      */
     reset?: false
 
     /**
-     * list of `ruleId`s to turn off
+     * List of `ruleId`s to turn off
      */
     disable?: string[]
   }
@@ -75,18 +75,18 @@ declare namespace messageControl {
     name: string
 
     /**
-     * test for possible markers
+     * Test for possible markers
      */
     test: Test<T>
 
     /**
-     * parse a possible marker to a comment marker object (Marker)
+     * Parse a possible marker to a comment marker object (Marker)
      * if possible the marker isn't a marker, should return `null`.
      */
     marker: MarkerParser<T>
 
     /**
-     * list of allowed `ruleId`s. When given a warning is shown
+     * List of allowed `ruleId`s. When given a warning is shown
      * when someone tries to control an unknown rule.
      *
      * For example, `{name: 'alpha', known: ['bravo']}` results
