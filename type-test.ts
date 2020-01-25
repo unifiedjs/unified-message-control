@@ -19,6 +19,22 @@ control({
 
 control({
   name: 'foo',
+  marker: (n: Node) => ({
+    name: 'foo',
+    attributes: 'bar=false',
+    parameters: {
+      bar: false
+    },
+    node: {
+      type: 'foo',
+      value: 'bar=false'
+    }
+  }),
+  test: 'foo'
+})
+
+control({
+  name: 'foo',
   marker: (n: Element) => null,
   test: 'element'
 })
@@ -91,6 +107,22 @@ unified().use(control, {
   name: 'foo',
   marker: (n: Node) => null,
   test: 'html'
+})
+
+unified().use(control, {
+  name: 'foo',
+  marker: (n: Node) => ({
+    name: 'foo',
+    attributes: 'bar=false',
+    parameters: {
+      bar: false
+    },
+    node: {
+      type: 'foo',
+      value: 'bar=false'
+    }
+  }),
+  test: 'foo'
 })
 
 unified().use(control, {
