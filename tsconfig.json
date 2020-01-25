@@ -4,9 +4,6 @@
     "strict": true,
     "noEmit": true,
     "esModuleInterop": true,
-
-    // this looks super weird, but baseUrl doesn't consider .
-    // a module so we have to explicitly tell it in paths...
     "baseUrl": ".",
     "paths": {
       "unified-message-control": ["."]
