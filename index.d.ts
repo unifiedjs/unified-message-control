@@ -1,7 +1,6 @@
 // TypeScript Version: 3.4
 
 import {Node} from 'unist'
-import {VFile} from 'vfile'
 import {Transformer} from 'unified'
 import {Test} from 'unist-util-is'
 
