@@ -19,7 +19,8 @@
     "Thomas 'zemnmez' Shadwell (https://github.com/zemnmez)"
   ],
   "files": [
-    "index.js"
+    "index.js",
+    "index.d.ts"
   ],
   "dependencies": {
     "unist-util-visit": "^2.0.0",
