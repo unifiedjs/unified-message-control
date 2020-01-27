@@ -2,8 +2,8 @@
  * This file is purely for typechecking and does not produce code
  */
 
-import control from 'unified-message-control'
-import unified from 'unified'
+import * as control from 'unified-message-control'
+import * as unified from 'unified'
 import {Node} from 'unist'
 import {HTML} from 'mdast'
 import {Element} from 'hast'
