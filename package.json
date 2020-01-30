@@ -15,36 +15,45 @@
   "author": "Titus Wormer <tituswormer@gmail.com> (https://wooorm.com)",
   "contributors": [
     "Titus Wormer <tituswormer@gmail.com> (https://wooorm.com)",
-    "Christian Murphy <christian.murphy.42@gmail.com> (https://github.com/ChristianMurphy)"
+    "Christian Murphy <christian.murphy.42@gmail.com> (https://github.com/ChristianMurphy)",
+    "Thomas 'zemnmez' Shadwell (https://github.com/zemnmez)"
   ],
   "files": [
-    "index.js"
+    "index.js",
+    "index.d.ts"
   ],
   "dependencies": {
-    "unist-util-visit": "^1.0.0",
-    "vfile-location": "^2.0.0"
+    "unist-util-visit": "^2.0.0",
+    "vfile-location": "^3.0.0"
   },
   "devDependencies": {
+    "@types/hast": "^2.0.0",
+    "@types/mdast": "^3.0.0",
+    "@types/unist": "^2.0.0",
     "browserify": "^16.0.0",
+    "dtslint": "^2.0.0",
     "esmangle": "^1.0.0",
     "mdast-comment-marker": "^1.0.0",
-    "nyc": "^14.0.0",
+    "nyc": "^15.0.0",
     "prettier": "^1.0.0",
-    "remark": "^10.0.0",
-    "remark-cli": "^6.0.0",
-    "remark-preset-wooorm": "^5.0.0",
-    "remark-toc": "^5.0.0",
+    "remark": "^11.0.0",
+    "remark-cli": "^7.0.0",
+    "remark-preset-wooorm": "^6.0.0",
+    "remark-toc": "^7.0.0",
     "tape": "^4.0.0",
+    "unified": "^8.0.0",
+    "unist-util-is": "^4.0.0",
     "xo": "^0.24.0"
   },
   "scripts": {
-    "format": "remark . -qfo && prettier --write \"**/*.js\" && xo --fix",
+    "format": "remark . -qfo && prettier --write '**/*.{js,ts}' && xo --fix",
     "build-bundle": "browserify index.js --bare -s unifiedMessageControl > unified-message-control.js",
     "build-mangle": "esmangle unified-message-control.js > unified-message-control.min.js",
     "build": "npm run build-bundle && npm run build-mangle",
     "test-api": "node test",
     "test-coverage": "nyc --reporter lcov tape test.js",
-    "test": "npm run format && npm run build && npm run test-coverage"
+    "test-types": "dtslint",
+    "test": "npm run test-types && npm run format && npm run build && npm run test-coverage"
   },
   "nyc": {
     "check-coverage": true,
