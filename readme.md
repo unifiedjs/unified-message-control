@@ -159,11 +159,11 @@ After the end of the following node, messages are turned on again.
 
 For example, to turn off certain messages for the next node:
 
-```md
+```markdown
 <!--lint ignore list-item-bullet-indent strong-marker-->
 
 *   **foo**
-  * __bar__
+    * __bar__
 ```
 
 ## Contribute
