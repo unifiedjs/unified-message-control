@@ -6,14 +6,15 @@ var visit = require('unist-util-visit')
 module.exports = messageControl
 
 function messageControl(options) {
-  var name = options && options.name
-  var marker = options && options.marker
-  var test = options && options.test
-  var sources
-  var known
-  var reset
-  var enable
-  var disable
+  var opts = options || {}
+  var name = opts.name
+  var marker = opts.marker
+  var test = opts.test
+  var sources = opts.source
+  var known = opts.known
+  var reset = opts.reset
+  var enable = opts.enable || []
+  var disable = opts.disable || []
 
   if (!name) {
     throw new Error('Expected `name` in `options`, got `' + name + '`')
@@ -22,12 +23,6 @@ function messageControl(options) {
   if (!marker) {
     throw new Error('Expected `marker` in `options`, got `' + marker + '`')
   }
-
-  known = options.known
-  reset = options.reset
-  enable = options.enable || []
-  disable = options.disable || []
-  sources = options.source
 
   if (!sources) {
     sources = [name]
@@ -59,7 +54,7 @@ function messageControl(options) {
       var pos
       var tail
 
-      if (!mark || mark.name !== options.name) {
+      if (!mark || mark.name !== name) {
         return
       }
 
