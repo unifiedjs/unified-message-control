@@ -47,7 +47,7 @@
     "tape": "^4.0.0",
     "unified": "^8.0.0",
     "unist-util-is": "^4.0.0",
-    "xo": "^0.24.0"
+    "xo": "^0.25.0"
   },
   "scripts": {
     "format": "remark . -qfo && prettier --write '**/*.{js,ts}' && xo --fix",
@@ -77,6 +77,7 @@
     "prettier": true,
     "esnext": false,
     "rules": {
+      "unicorn/prefer-includes": "off",
       "guard-for-in": "off"
     },
     "ignores": [
