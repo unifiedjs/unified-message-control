@@ -5,6 +5,7 @@
   "license": "MIT",
   "keywords": [
     "unified",
+    "unified-plugin",
     "comment",
     "message",
     "marker",
