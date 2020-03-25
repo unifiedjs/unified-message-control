@@ -6,15 +6,15 @@ var visit = require('unist-util-visit')
 module.exports = messageControl
 
 function messageControl(options) {
-  var opts = options || {}
-  var name = opts.name
-  var marker = opts.marker
-  var test = opts.test
-  var sources = opts.source
-  var known = opts.known
-  var reset = opts.reset
-  var enable = opts.enable || []
-  var disable = opts.disable || []
+  var settings = options || {}
+  var name = settings.name
+  var marker = settings.marker
+  var test = settings.test
+  var sources = settings.source
+  var known = settings.known
+  var reset = settings.reset
+  var enable = settings.enable || []
+  var disable = settings.disable || []
 
   if (!name) {
     throw new Error('Expected `name` in `options`, got `' + name + '`')
@@ -288,6 +288,6 @@ function detectGaps(tree, file) {
   }
 }
 
-function trim(str) {
-  return str.replace(/^\s*|\s*$/g, '')
+function trim(value) {
+  return value.replace(/^\s*|\s*$/g, '')
 }

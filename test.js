@@ -6,49 +6,45 @@ var toc = require('remark-toc')
 var mdastMarker = require('mdast-comment-marker')
 var control = require('.')
 
-test('control()', function(t) {
+test('control()', function (t) {
   t.throws(
-    function() {
-      remark()
-        .use(control)
-        .freeze()
+    function () {
+      remark().use(control).freeze()
     },
     /Expected `name` in `options`, got `undefined`/,
     'should throw without `name`'
   )
 
   t.throws(
-    function() {
-      remark()
-        .use(control, {name: 'foo'})
-        .freeze()
+    function () {
+      remark().use(control, {name: 'foo'}).freeze()
     },
     /Expected `marker` in `options`, got `undefined`/,
     'should throw without marker'
   )
 
-  t.doesNotThrow(function() {
+  t.doesNotThrow(function () {
     remark()
-      .use(control, {name: 'foo', marker: function() {}})
+      .use(control, {name: 'foo', marker: function () {}})
       .freeze()
   }, 'should *not* throw without test')
 
   remark()
-    .use(function() {
+    .use(function () {
       var transformer = control({
         name: 'foo',
         marker: mdastMarker,
         test: 'html'
       })
 
-      return function(tree, file) {
+      return function (tree, file) {
         file.message('Error', tree.children[1], 'foo:bar')
         transformer(tree, file)
       }
     })
     .process(
       ['<!--foo disable bar-->', '', 'This is a paragraph.'].join('\n'),
-      function(err, file) {
+      function (err, file) {
         t.deepEqual(
           [err].concat(file.messages),
           [null],
@@ -58,14 +54,14 @@ test('control()', function(t) {
     )
 
   remark()
-    .use(function() {
+    .use(function () {
       var transformer = control({
         name: 'foo',
         marker: mdastMarker,
         test: 'html'
       })
 
-      return function(tree, file) {
+      return function (tree, file) {
         file.message('Error', tree.children[1], 'foo:bar')
 
         transformer(tree, file)
@@ -73,7 +69,7 @@ test('control()', function(t) {
     })
     .process(
       ['<!--foo disable-->', '', 'This is a paragraph.'].join('\n'),
-      function(err, file) {
+      function (err, file) {
         t.deepEqual(
           [err].concat(file.messages),
           [null],
@@ -83,7 +79,7 @@ test('control()', function(t) {
     )
 
   remark()
-    .use(function() {
+    .use(function () {
       var transformer = control({
         name: 'foo',
         reset: true,
@@ -91,7 +87,7 @@ test('control()', function(t) {
         test: 'html'
       })
 
-      return function(tree, file) {
+      return function (tree, file) {
         file.message('Error', tree.children[0], 'foo:bar')
         file.message('Error', tree.children[2], 'foo:bar')
 
@@ -106,7 +102,7 @@ test('control()', function(t) {
         '',
         'This is a paragraph.'
       ].join('\n'),
-      function(err, file) {
+      function (err, file) {
         t.deepEqual(
           [err].concat(file.messages.map(String)),
           [null, '5:1-5:21: Error'],
@@ -116,7 +112,7 @@ test('control()', function(t) {
     )
 
   remark()
-    .use(function() {
+    .use(function () {
       var transformer = control({
         name: 'foo',
         reset: true,
@@ -124,7 +120,7 @@ test('control()', function(t) {
         test: 'html'
       })
 
-      return function(tree, file) {
+      return function (tree, file) {
         file.message('Error', tree.children[1], 'foo:bar')
 
         transformer(tree, file)
@@ -132,7 +128,7 @@ test('control()', function(t) {
     })
     .process(
       ['<!--foo enable bar-->', '', 'This is a paragraph.'].join('\n'),
-      function(err, file) {
+      function (err, file) {
         t.deepEqual(
           [err].concat(file.messages.map(String)),
           [null, '3:1-3:21: Error'],
@@ -142,14 +138,14 @@ test('control()', function(t) {
     )
 
   remark()
-    .use(function() {
+    .use(function () {
       var transformer = control({
         name: 'foo',
         marker: mdastMarker,
         test: 'html'
       })
 
-      return function(tree, file) {
+      return function (tree, file) {
         file.message('Error', tree.children[1], 'foo:bar')
         file.message('Error', tree.children[3], 'foo:bar')
 
@@ -166,7 +162,7 @@ test('control()', function(t) {
         '',
         'This is a paragraph.'
       ].join('\n'),
-      function(err, file) {
+      function (err, file) {
         t.deepEqual(
           [err].concat(file.messages.map(String)),
           [null, '7:1-7:21: Error'],
@@ -176,14 +172,14 @@ test('control()', function(t) {
     )
 
   remark()
-    .use(function() {
+    .use(function () {
       var transformer = control({
         name: 'foo',
         marker: mdastMarker,
         test: 'html'
       })
 
-      return function(tree, file) {
+      return function (tree, file) {
         file.message('Error', tree.children[1], 'foo:bar')
         file.message('Error', tree.children[3], 'foo:bar')
 
@@ -200,7 +196,7 @@ test('control()', function(t) {
         '',
         'This is a paragraph.'
       ].join('\n'),
-      function(err, file) {
+      function (err, file) {
         t.deepEqual(
           [err].concat(file.messages.map(String)),
           [null, '7:1-7:21: Error'],
@@ -210,14 +206,14 @@ test('control()', function(t) {
     )
 
   remark()
-    .use(function() {
+    .use(function () {
       var transformer = control({
         name: 'foo',
         marker: mdastMarker,
         test: 'html'
       })
 
-      return function(tree, file) {
+      return function (tree, file) {
         file.message('Error', tree.children[1], 'foo:bar')
         file.message('Error', tree.children[2], 'foo:bar')
 
@@ -232,7 +228,7 @@ test('control()', function(t) {
         '',
         'This is a paragraph.'
       ].join('\n'),
-      function(err, file) {
+      function (err, file) {
         t.deepEqual(
           [err].concat(file.messages.map(String)),
           [null, '5:1-5:21: Error'],
@@ -242,14 +238,14 @@ test('control()', function(t) {
     )
 
   remark()
-    .use(function() {
+    .use(function () {
       var transformer = control({
         name: 'foo',
         marker: mdastMarker,
         test: 'html'
       })
 
-      return function(tree, file) {
+      return function (tree, file) {
         file.message('Error', tree.children[1], 'foo:bar')
         file.message('Error', tree.children[2], 'foo:bar')
 
@@ -264,7 +260,7 @@ test('control()', function(t) {
         '',
         'This is a paragraph.'
       ].join('\n'),
-      function(err, file) {
+      function (err, file) {
         t.deepEqual(
           [err].concat(file.messages.map(String)),
           [null, '5:1-5:21: Error'],
@@ -274,14 +270,14 @@ test('control()', function(t) {
     )
 
   remark()
-    .use(function() {
+    .use(function () {
       var transformer = control({
         name: 'foo',
         marker: mdastMarker,
         test: 'html'
       })
 
-      return function(tree, file) {
+      return function (tree, file) {
         file.message('Error', tree.children[1], 'foo:bar')
         file.message('Error', tree.children[1], 'foo:baz')
 
@@ -290,7 +286,7 @@ test('control()', function(t) {
     })
     .process(
       ['<!--foo ignore bar baz-->', '', 'This is a paragraph.'].join('\n'),
-      function(err, file) {
+      function (err, file) {
         t.deepEqual(
           [err].concat(file.messages.map(String)),
           [null],
@@ -300,10 +296,10 @@ test('control()', function(t) {
     )
 
   remark()
-    .use(function() {
+    .use(function () {
       return control({name: 'foo', marker: mdastMarker, test: 'html'})
     })
-    .process('<!--foo test-->', function(err) {
+    .process('<!--foo test-->', function (err) {
       t.equal(
         String(err),
         '1:1-1:16: Unknown keyword `test`: ' +
@@ -314,14 +310,14 @@ test('control()', function(t) {
 
   remark()
     .use(toc)
-    .use(function() {
+    .use(function () {
       var transformer = control({
         name: 'foo',
         marker: mdastMarker,
         test: 'html'
       })
 
-      return function(tree, file) {
+      return function (tree, file) {
         file.message('Error', {line: 5, column: 1}, 'foo:bar')
         file.message('Error', {line: 7, column: 1}, 'foo:bar')
 
@@ -338,7 +334,7 @@ test('control()', function(t) {
         '',
         '## Another header'
       ].join('\n'),
-      function(err, file) {
+      function (err, file) {
         t.deepEqual(
           [err].concat(file.messages.map(String)),
           [null, '7:1: Error'],
@@ -348,14 +344,14 @@ test('control()', function(t) {
     )
 
   remark()
-    .use(function() {
+    .use(function () {
       var transformer = control({
         name: 'foo',
         marker: mdastMarker,
         test: 'html'
       })
 
-      return function(tree, file) {
+      return function (tree, file) {
         file.message('Error', {line: 5, column: 1}, 'foo:bar')
         file.message('Error', {line: 5, column: 1}, 'foo:bar')
 
@@ -373,7 +369,7 @@ test('control()', function(t) {
         '',
         '*  [This is removed](#this-is-removed)'
       ].join('\n'),
-      function(err, file) {
+      function (err, file) {
         t.deepEqual(
           [err].concat(file.messages.map(String)),
           [null],
@@ -383,20 +379,20 @@ test('control()', function(t) {
     )
 
   remark()
-    .use(function() {
+    .use(function () {
       var transformer = control({
         name: 'foo',
         marker: mdastMarker,
         test: 'html'
       })
 
-      return function(tree, file) {
+      return function (tree, file) {
         file.message('Error', 'foo:bar')
 
         transformer(tree, file)
       }
     })
-    .process('', function(err, file) {
+    .process('', function (err, file) {
       t.deepEqual(
         [err].concat(file.messages.map(String)),
         [null, '1:1: Error'],
@@ -405,20 +401,20 @@ test('control()', function(t) {
     })
 
   remark()
-    .use(function() {
+    .use(function () {
       var transformer = control({
         name: 'foo',
         marker: mdastMarker,
         test: 'html'
       })
 
-      return function(tree, file) {
+      return function (tree, file) {
         file.message('Error', tree.position.end, 'foo:bar')
 
         transformer(tree, file)
       }
     })
-    .process(['# README', ''].join('\n'), function(err, file) {
+    .process(['# README', ''].join('\n'), function (err, file) {
       t.deepEqual(
         [err].concat(file.messages.map(String)),
         [null, '2:1: Error'],
@@ -427,20 +423,20 @@ test('control()', function(t) {
     })
 
   remark()
-    .use(function() {
+    .use(function () {
       var transformer = control({
         name: 'foo',
         marker: mdastMarker,
         test: 'html'
       })
 
-      return function(tree, file) {
+      return function (tree, file) {
         file.message('Error', tree.children[1].position.end, 'foo:bar')
 
         transformer(tree, file)
       }
     })
-    .process(['# README', '', '*   List'].join('\n'), function(err, file) {
+    .process(['# README', '', '*   List'].join('\n'), function (err, file) {
       t.deepEqual(
         [err].concat(file.messages.map(String)),
         [null, '3:9: Error'],
@@ -449,14 +445,14 @@ test('control()', function(t) {
     })
 
   remark()
-    .use(function() {
+    .use(function () {
       var transformer = control({
         name: 'foo',
         marker: mdastMarker,
         test: 'html'
       })
 
-      return function(tree, file) {
+      return function (tree, file) {
         file.message('Error', tree.children[1], 'foo:bar')
         file.message('Error', tree.children[3], 'foo:bar')
 
@@ -473,7 +469,7 @@ test('control()', function(t) {
         '',
         'This is a paragraph.'
       ].join('\n'),
-      function(err, file) {
+      function (err, file) {
         t.deepEqual(
           [err].concat(file.messages.map(String)),
           [null],
@@ -483,20 +479,20 @@ test('control()', function(t) {
     )
 
   remark()
-    .use(function() {
+    .use(function () {
       var transformer = control({
         name: 'foo',
         marker: mdastMarker,
         test: 'html'
       })
 
-      return function(tree, file) {
+      return function (tree, file) {
         file.message('Error', 'foo:bar')
 
         transformer(tree, file)
       }
     })
-    .process(['Foo'].join('\n'), function(err, file) {
+    .process(['Foo'].join('\n'), function (err, file) {
       t.deepEqual(
         [err].concat(file.messages.map(String)),
         [null, '1:1: Error'],
@@ -505,12 +501,12 @@ test('control()', function(t) {
     })
 
   remark()
-    .use(function() {
+    .use(function () {
       return control({name: 'foo', marker: mdastMarker, test: 'html'})
     })
     .process(
       ['<!doctype html>', '', '<!--bar baz qux-->', ''].join('\n'),
-      function(err, file) {
+      function (err, file) {
         t.deepEqual(
           [err].concat(file.messages.map(String)),
           [null],
@@ -520,7 +516,7 @@ test('control()', function(t) {
     )
 
   remark()
-    .use(function() {
+    .use(function () {
       return control({
         name: 'foo',
         known: ['known'],
@@ -530,7 +526,7 @@ test('control()', function(t) {
     })
     .process(
       ['<!--foo ignore known-->', '', '<!--foo ignore unknown-->'].join('\n'),
-      function(err, file) {
+      function (err, file) {
         t.deepEqual(
           [err].concat(file.messages.map(String)),
           [null, "3:1-3:26: Unknown rule: cannot ignore `'unknown'`"],
@@ -540,7 +536,7 @@ test('control()', function(t) {
     )
 
   remark()
-    .use(function() {
+    .use(function () {
       var transformer = control({
         name: 'foo',
         source: 'baz',
@@ -548,13 +544,13 @@ test('control()', function(t) {
         test: 'html'
       })
 
-      return function(tree, file) {
+      return function (tree, file) {
         file.message('Error', tree.children[1], 'baz:bar')
 
         transformer(tree, file)
       }
     })
-    .process(['<!--foo ignore bar-->', '', 'Foo'].join('\n'), function(
+    .process(['<!--foo ignore bar-->', '', 'Foo'].join('\n'), function (
       err,
       file
     ) {
@@ -566,7 +562,7 @@ test('control()', function(t) {
     })
 
   remark()
-    .use(function() {
+    .use(function () {
       var transformer = control({
         name: 'alpha',
         source: ['bravo', 'charlie'],
@@ -574,7 +570,7 @@ test('control()', function(t) {
         test: 'html'
       })
 
-      return function(tree, file) {
+      return function (tree, file) {
         file.message('Error', tree.children[1], 'bravo:delta')
         file.message('Error', tree.children[3], 'charlie:echo')
 
@@ -591,7 +587,7 @@ test('control()', function(t) {
         '',
         'Golf'
       ].join('\n'),
-      function(err, file) {
+      function (err, file) {
         t.deepEqual(
           [err].concat(file.messages.map(String)),
           [null],
@@ -601,7 +597,7 @@ test('control()', function(t) {
     )
 
   remark()
-    .use(function() {
+    .use(function () {
       var transformer = control({
         name: 'foo',
         disable: ['bar'],
@@ -609,13 +605,13 @@ test('control()', function(t) {
         test: 'html'
       })
 
-      return function(tree, file) {
+      return function (tree, file) {
         file.message('Error', tree.children[0], 'foo:bar')
 
         transformer(tree, file)
       }
     })
-    .process(['This is a paragraph.'].join('\n'), function(err, file) {
+    .process(['This is a paragraph.'].join('\n'), function (err, file) {
       t.deepEqual(
         [err].concat(file.messages.map(String)),
         [null],
@@ -624,7 +620,7 @@ test('control()', function(t) {
     })
 
   remark()
-    .use(function() {
+    .use(function () {
       var transformer = control({
         name: 'foo',
         reset: true,
@@ -633,13 +629,13 @@ test('control()', function(t) {
         test: 'html'
       })
 
-      return function(tree, file) {
+      return function (tree, file) {
         file.message('Error', tree.children[0], 'foo:bar')
 
         transformer(tree, file)
       }
     })
-    .process(['This is a paragraph.'].join('\n'), function(err, file) {
+    .process(['This is a paragraph.'].join('\n'), function (err, file) {
       t.deepEqual(
         [err].concat(file.messages.map(String)),
         [null, '1:1-1:21: Error'],
@@ -648,20 +644,20 @@ test('control()', function(t) {
     })
 
   remark()
-    .use(function() {
+    .use(function () {
       var transformer = control({
         name: 'foo',
         marker: mdastMarker,
         test: 'html'
       })
 
-      return function(tree, file) {
+      return function (tree, file) {
         file.message('Error', {line: 1, column: 1}, 'foo:bar')
 
         transformer(tree, file)
       }
     })
-    .process('<!--foo disable bar-->\n', function(err, file) {
+    .process('<!--foo disable bar-->\n', function (err, file) {
       t.deepEqual(
         [err].concat(file.messages.map(String)),
         [null],
@@ -670,7 +666,7 @@ test('control()', function(t) {
     })
 
   remark()
-    .use(function() {
+    .use(function () {
       var transformer = control({
         name: 'foo',
         marker: mdastMarker,
@@ -678,13 +674,13 @@ test('control()', function(t) {
         reset: true
       })
 
-      return function(tree, file) {
+      return function (tree, file) {
         file.message('Error', {line: 1, column: 1}, 'foo:bar')
 
         transformer(tree, file)
       }
     })
-    .process('<!--foo enable-->\n', function(err, file) {
+    .process('<!--foo enable-->\n', function (err, file) {
       t.deepEqual(
         [err].concat(file.messages.map(String)),
         [null, '1:1: Error'],
@@ -693,20 +689,20 @@ test('control()', function(t) {
     })
 
   remark()
-    .use(function() {
+    .use(function () {
       var transformer = control({
         name: 'foo',
         marker: mdastMarker,
         test: 'html'
       })
 
-      return function(tree, file) {
+      return function (tree, file) {
         file.message('Error', 'foo:bar')
 
         transformer(tree, file)
       }
     })
-    .process('<!--foo disable bar-->\n', function(err, file) {
+    .process('<!--foo disable bar-->\n', function (err, file) {
       t.deepEqual(
         [err].concat(file.messages.map(String)),
         [null],
@@ -715,7 +711,7 @@ test('control()', function(t) {
     })
 
   remark()
-    .use(function() {
+    .use(function () {
       var transformer = control({
         name: 'foo',
         marker: mdastMarker,
@@ -723,13 +719,13 @@ test('control()', function(t) {
         reset: true
       })
 
-      return function(tree, file) {
+      return function (tree, file) {
         file.message('Error', 'foo:bar')
 
         transformer(tree, file)
       }
     })
-    .process('<!--foo enable-->\n', function(err, file) {
+    .process('<!--foo enable-->\n', function (err, file) {
       t.deepEqual(
         [err].concat(file.messages.map(String)),
         [null, '1:1: Error'],

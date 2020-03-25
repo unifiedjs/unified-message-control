@@ -36,11 +36,11 @@
     "@types/mdast": "^3.0.0",
     "@types/unist": "^2.0.0",
     "browserify": "^16.0.0",
-    "dtslint": "^2.0.0",
+    "dtslint": "^3.0.0",
     "esmangle": "^1.0.0",
     "mdast-comment-marker": "^1.0.0",
     "nyc": "^15.0.0",
-    "prettier": "^1.0.0",
+    "prettier": "^2.0.0",
     "remark": "^11.0.0",
     "remark-cli": "^7.0.0",
     "remark-preset-wooorm": "^6.0.0",
@@ -48,7 +48,7 @@
     "tape": "^4.0.0",
     "unified": "^8.0.0",
     "unist-util-is": "^4.0.0",
-    "xo": "^0.25.0"
+    "xo": "^0.28.0"
   },
   "scripts": {
     "format": "remark . -qfo && prettier --write '**/*.{js,ts}' && xo --fix",
@@ -78,6 +78,8 @@
     "prettier": true,
     "esnext": false,
     "rules": {
+      "@typescript-eslint/no-unused-vars": "off",
+      "unicorn/string-content": "off",
       "unicorn/prefer-includes": "off",
       "guard-for-in": "off"
     },

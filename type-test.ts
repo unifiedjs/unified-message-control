@@ -2,6 +2,7 @@
  * This file is purely for typechecking and does not produce code
  */
 
+/* eslint-disable-next-line import/no-extraneous-dependencies */
 import * as control from 'unified-message-control'
 import * as unified from 'unified'
 import {Node} from 'unist'
