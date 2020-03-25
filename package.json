@@ -1,6 +1,6 @@
 {
   "name": "unified-message-control",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Enable, disable, and ignore messages from unified processors",
   "license": "MIT",
   "keywords": [
