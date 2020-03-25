@@ -40,12 +40,12 @@ var mdastMarker = require('mdast-comment-marker')
 remark()
   .use(warn)
   .use(control, {name: 'foo', marker: mdastMarker, test: 'html'})
-  .process(vfile.readSync('example.md'), function(err, file) {
+  .process(vfile.readSync('example.md'), function (err, file) {
     console.error(report(err || file))
   })
 
 function warn() {
-  return function(tree, file) {
+  return function (tree, file) {
     file.message('Whoops!', tree.children[1], 'foo:thing')
   }
 }
@@ -172,8 +172,8 @@ See [`contributing.md`][contributing] in [`unifiedjs/.github`][health] for ways
 to get started.
 See [`support.md`][support] for ways to get help.
 
-This project has a [Code of Conduct][coc].
-By interacting with this repository, organisation, or community you agree to
+This project has a [code of conduct][coc].
+By interacting with this repository, organization, or community you agree to
 abide by its terms.
 
 ## License
@@ -204,7 +204,7 @@ abide by its terms.
 
 [collective]: https://opencollective.com/unified
 
-[chat-badge]: https://img.shields.io/badge/join%20the%20community-on%20spectrum-7b16ff.svg
+[chat-badge]: https://img.shields.io/badge/chat-spectrum-7b16ff.svg
 
 [chat]: https://spectrum.chat/unified
 
