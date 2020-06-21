@@ -41,23 +41,23 @@
     "mdast-comment-marker": "^1.0.0",
     "nyc": "^15.0.0",
     "prettier": "^2.0.0",
-    "remark": "^11.0.0",
-    "remark-cli": "^7.0.0",
-    "remark-preset-wooorm": "^6.0.0",
+    "remark": "^12.0.0",
+    "remark-cli": "^8.0.0",
+    "remark-preset-wooorm": "^7.0.0",
     "remark-toc": "^7.0.0",
-    "tape": "^4.0.0",
-    "unified": "^8.0.0",
+    "tape": "^5.0.0",
+    "unified": "^9.0.0",
     "unist-util-is": "^4.0.0",
-    "xo": "^0.28.0"
+    "xo": "^0.32.0"
   },
   "scripts": {
-    "format": "remark . -qfo && prettier --write '**/*.{js,ts}' && xo --fix",
+    "format": "remark . -qfo && prettier . --write && xo --fix",
     "build-bundle": "browserify index.js --bare -s unifiedMessageControl > unified-message-control.js",
     "build-mangle": "esmangle unified-message-control.js > unified-message-control.min.js",
     "build": "npm run build-bundle && npm run build-mangle",
     "test-api": "node test",
     "test-coverage": "nyc --reporter lcov tape test.js",
-    "test-types": "dtslint",
+    "test-types": "# dtslint",
     "test": "npm run test-types && npm run format && npm run build && npm run test-coverage"
   },
   "nyc": {
@@ -78,12 +78,13 @@
     "prettier": true,
     "esnext": false,
     "rules": {
-      "@typescript-eslint/no-unused-vars": "off",
-      "unicorn/string-content": "off",
+      "unicorn/no-fn-reference-in-iterator": "off",
       "unicorn/prefer-includes": "off",
+      "unicorn/string-content": "off",
       "guard-for-in": "off"
     },
     "ignores": [
+      "*.ts",
       "unified-message-control.js"
     ]
   },

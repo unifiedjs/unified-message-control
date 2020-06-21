@@ -1,3 +1,5 @@
 coverage/
 unified-message-control.js
 unified-message-control.min.js
+*.json
+*.md
