@@ -75,13 +75,12 @@ control({
   disable: ['rule-id']
 })
 
+// prettier-ignore
 control({
   name: 'foo',
   marker: (n: Node) => null,
   test: 'html',
-  reset: false,
-  // $ExpectError
-  enable: ['rule-id']
+  reset: false, enable: ['rule-id'] // $ExpectError
 })
 
 control({
@@ -92,13 +91,12 @@ control({
   enable: ['rule-id']
 })
 
+// prettier-ignore
 control({
   name: 'foo',
   marker: (n: Node) => null,
   test: 'html',
-  reset: true,
-  // $ExpectError
-  disable: ['rule-id']
+  reset: true, disable: ['rule-id'] // $ExpectError
 })
 
 // $ExpectError
@@ -167,13 +165,12 @@ unified().use(control, {
   disable: ['rule-id']
 })
 
+// prettier-ignore
 unified().use(control, {
   name: 'foo',
   marker: (n: Node) => null,
   test: 'html',
-  reset: false,
-  // $ExpectError
-  enable: ['rule-id']
+  reset: false, enable: ['rule-id'] // $ExpectError
 })
 
 unified().use(control, {
@@ -184,11 +181,10 @@ unified().use(control, {
   enable: ['rule-id']
 })
 
+// prettier-ignore
 unified().use(control, {
   name: 'foo',
   marker: (n: Node) => null,
   test: 'html',
-  reset: true,
-  // $ExpectError
-  disable: ['rule-id']
+  reset: true, disable: ['rule-id'] // $ExpectError
 })
