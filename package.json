@@ -57,7 +57,7 @@
     "build": "npm run build-bundle && npm run build-mangle",
     "test-api": "node test",
     "test-coverage": "nyc --reporter lcov tape test.js",
-    "test-types": "# dtslint",
+    "test-types": "dtslint",
     "test": "npm run test-types && npm run format && npm run build && npm run test-coverage"
   },
   "nyc": {
