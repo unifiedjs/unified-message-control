@@ -154,7 +154,7 @@ function messageControl(options) {
     function getState(ruleId) {
       var ranges = ruleId ? scope[ruleId] : globals
 
-      if (ranges && ranges.length !== 0) {
+      if (ranges && ranges.length > 0) {
         return ranges[ranges.length - 1].state
       }
 

@@ -550,16 +550,16 @@ test('control()', function (t) {
         transformer(tree, file)
       }
     })
-    .process(['<!--foo ignore bar-->', '', 'Foo'].join('\n'), function (
-      err,
-      file
-    ) {
-      t.deepEqual(
-        [err].concat(file.messages.map(String)),
-        [null],
-        'should ignore by `source`, when given as a string'
-      )
-    })
+    .process(
+      ['<!--foo ignore bar-->', '', 'Foo'].join('\n'),
+      function (err, file) {
+        t.deepEqual(
+          [err].concat(file.messages.map(String)),
+          [null],
+          'should ignore by `source`, when given as a string'
+        )
+      }
+    )
 
   remark()
     .use(function () {
