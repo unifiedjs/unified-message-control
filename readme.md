@@ -182,9 +182,9 @@ abide by its terms.
 
 <!-- Definitions -->
 
-[build-badge]: https://img.shields.io/travis/unifiedjs/unified-message-control.svg
+[build-badge]: https://github.com/unifiedjs/unified-message-control/workflows/main/badge.svg
 
-[build]: https://travis-ci.org/unifiedjs/unified-message-control
+[build]: https://github.com/unifiedjs/unified-message-control/actions
 
 [coverage-badge]: https://img.shields.io/codecov/c/github/unifiedjs/unified-message-control.svg
 
