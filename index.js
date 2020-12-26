@@ -7,25 +7,23 @@ module.exports = messageControl
 
 function messageControl(options) {
   var settings = options || {}
-  var name = settings.name
-  var marker = settings.marker
-  var test = settings.test
-  var sources = settings.source
-  var known = settings.known
-  var reset = settings.reset
   var enable = settings.enable || []
   var disable = settings.disable || []
+  var sources = settings.source
+  var reset = settings.reset
 
-  if (!name) {
-    throw new Error('Expected `name` in `options`, got `' + name + '`')
+  if (!settings.name) {
+    throw new Error('Expected `name` in `options`, got `' + settings.name + '`')
   }
 
-  if (!marker) {
-    throw new Error('Expected `marker` in `options`, got `' + marker + '`')
+  if (!settings.marker) {
+    throw new Error(
+      'Expected `marker` in `options`, got `' + settings.marker + '`'
+    )
   }
 
   if (!sources) {
-    sources = [name]
+    sources = [settings.name]
   } else if (typeof sources === 'string') {
     sources = [sources]
   }
@@ -39,30 +37,31 @@ function messageControl(options) {
     var scope = {}
     var globals = []
 
-    visit(tree, test, visitor)
+    visit(tree, settings.test, visitor)
 
     file.messages = file.messages.filter(filter)
 
     function visitor(node, position, parent) {
-      var mark = marker(node)
+      var mark = settings.marker(node)
       var ruleIds
-      var ruleId
       var verb
-      var index
-      var length
-      var next
       var pos
       var tail
+      var index
+      var ruleId
 
-      if (!mark || mark.name !== name) {
+      if (!mark || mark.name !== settings.name) {
         return
       }
 
       ruleIds = mark.attributes.split(/\s/g)
       verb = ruleIds.shift()
-      next = parent.children[position + 1]
       pos = mark.node.position && mark.node.position.start
-      tail = next && next.position && next.position.end
+      tail =
+        parent.children[position + 1] &&
+        parent.children[position + 1].position &&
+        parent.children[position + 1].position.end
+      index = -1
 
       if (verb !== 'enable' && verb !== 'disable' && verb !== 'ignore') {
         file.fail(
@@ -74,20 +73,9 @@ function messageControl(options) {
         )
       }
 
-      length = ruleIds.length
-      index = -1
-
       // Apply to all rules.
-      if (length === 0) {
-        if (verb === 'ignore') {
-          toggle(pos, false)
-          toggle(tail, true)
-        } else {
-          toggle(pos, verb === 'enable')
-          reset = verb !== 'enable'
-        }
-      } else {
-        while (++index < length) {
+      if (ruleIds.length) {
+        while (++index < ruleIds.length) {
           ruleId = ruleIds[index]
 
           if (isKnown(ruleId, verb, mark.node)) {
@@ -98,13 +86,17 @@ function messageControl(options) {
             }
           }
         }
+      } else if (verb === 'ignore') {
+        toggle(pos, false)
+        toggle(tail, true)
+      } else {
+        toggle(pos, verb === 'enable')
+        reset = verb !== 'enable'
       }
     }
 
     function filter(message) {
       var gapIndex = gaps.length
-      var ruleId = message.ruleId
-      var ranges = scope[ruleId]
       var pos
 
       // Keep messages from a different source.
@@ -132,12 +124,15 @@ function messageControl(options) {
       }
 
       // Check whether allowed by specific and global states.
-      return check(message, ranges, ruleId) && check(message, globals)
+      return (
+        check(message, scope[message.ruleId], message.ruleId) &&
+        check(message, globals)
+      )
     }
 
     // Helper to check (and possibly warn) if a `ruleId` is unknown.
     function isKnown(ruleId, verb, pos) {
-      var result = known ? known.indexOf(ruleId) !== -1 : true
+      var result = settings.known ? settings.known.indexOf(ruleId) !== -1 : true
 
       if (!result) {
         file.message(
@@ -154,7 +149,7 @@ function messageControl(options) {
     function getState(ruleId) {
       var ranges = ruleId ? scope[ruleId] : globals
 
-      if (ranges && ranges.length > 0) {
+      if (ranges && ranges.length) {
         return ranges[ranges.length - 1].state
       }
 
@@ -162,11 +157,7 @@ function messageControl(options) {
         return !reset
       }
 
-      if (reset) {
-        return enable.indexOf(ruleId) !== -1
-      }
-
-      return disable.indexOf(ruleId) === -1
+      return reset ? enable.indexOf(ruleId) > -1 : disable.indexOf(ruleId) < 0
     }
 
     // Handle a rule.
@@ -194,36 +185,30 @@ function messageControl(options) {
     }
 
     // Check all `ranges` for `message`.
-    function check(message, ranges, id) {
+    function check(message, ranges, ruleId) {
       // Check the state at the message’s position.
       var index = ranges && ranges.length
-      var length = -1
-      var range
 
-      while (--index > length) {
-        range = ranges[index]
-
-        /* istanbul ignore if - Generated marker. */
-        if (!range.position || !range.position.line || !range.position.column) {
-          continue
-        }
-
+      while (index--) {
         if (
-          range.position.line < message.line ||
-          (range.position.line === message.line &&
-            range.position.column <= message.column)
+          ranges[index].position &&
+          ranges[index].position.line &&
+          ranges[index].position.column &&
+          (ranges[index].position.line < message.line ||
+            (ranges[index].position.line === message.line &&
+              ranges[index].position.column <= message.column))
         ) {
-          return range.state === true
+          return ranges[index].state === true
         }
       }
 
       // The first marker ocurred after the first message, so we check the
       // initial state.
-      if (!id) {
+      if (!ruleId) {
         return initial || reset
       }
 
-      return reset ? enable.indexOf(id) !== -1 : disable.indexOf(id) === -1
+      return reset ? enable.indexOf(ruleId) > -1 : disable.indexOf(ruleId) < 0
     }
   }
 }
@@ -232,8 +217,8 @@ function messageControl(options) {
 function detectGaps(tree, file) {
   var lastNode = tree.children[tree.children.length - 1]
   var offset = 0
-  var isGap = false
   var gaps = []
+  var gap
 
   // Find all gaps.
   visit(tree, one)
@@ -259,35 +244,28 @@ function detectGaps(tree, file) {
   return gaps
 
   function one(node) {
-    var pos = node.position
-
-    update(pos && pos.start && pos.start.offset)
+    update(node.position && node.position.start && node.position.start.offset)
 
     if (!node.children) {
-      update(pos && pos.end && pos.end.offset)
+      update(node.position && node.position.end && node.position.end.offset)
     }
   }
 
   // Detect a new position.
   function update(latest) {
     if (latest === null || latest === undefined) {
-      isGap = true
-      return
-    }
+      gap = true
+    } else if (offset < latest) {
+      if (gap) {
+        gaps.push({start: offset, end: latest})
+        gap = null
+      }
 
-    if (offset >= latest) {
-      return
+      offset = latest
     }
-
-    if (isGap) {
-      gaps.push({start: offset, end: latest})
-      isGap = false
-    }
-
-    offset = latest
   }
 }
 
 function trim(value) {
-  return value.replace(/^\s*|\s*$/g, '')
+  return value.replace(/^\s+|\s+$/g, '')
 }

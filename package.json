@@ -78,10 +78,11 @@
     "prettier": true,
     "esnext": false,
     "rules": {
+      "guard-for-in": "off",
+      "unicorn/explicit-length-check": "off",
       "unicorn/no-fn-reference-in-iterator": "off",
       "unicorn/prefer-includes": "off",
-      "unicorn/string-content": "off",
-      "guard-for-in": "off"
+      "unicorn/string-content": "off"
     },
     "ignores": [
       "*.ts",
