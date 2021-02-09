@@ -43,7 +43,7 @@ test('control()', function (t) {
       }
     })
     .process(
-      ['<!--foo disable bar-->', '', 'This is a paragraph.'].join('\n'),
+      '<!--foo disable bar-->\n\nThis is a paragraph.',
       function (error, file) {
         t.deepEqual(
           [error].concat(file.messages),
@@ -68,7 +68,7 @@ test('control()', function (t) {
       }
     })
     .process(
-      ['<!--foo disable-->', '', 'This is a paragraph.'].join('\n'),
+      '<!--foo disable-->\n\nThis is a paragraph.',
       function (error, file) {
         t.deepEqual(
           [error].concat(file.messages),
@@ -127,7 +127,7 @@ test('control()', function (t) {
       }
     })
     .process(
-      ['<!--foo enable bar-->', '', 'This is a paragraph.'].join('\n'),
+      '<!--foo enable bar-->\n\nThis is a paragraph.',
       function (error, file) {
         t.deepEqual(
           [error].concat(file.messages.map(String)),
@@ -285,7 +285,7 @@ test('control()', function (t) {
       }
     })
     .process(
-      ['<!--foo ignore bar baz-->', '', 'This is a paragraph.'].join('\n'),
+      '<!--foo ignore bar baz-->\n\nThis is a paragraph.',
       function (error, file) {
         t.deepEqual(
           [error].concat(file.messages.map(String)),
@@ -414,7 +414,7 @@ test('control()', function (t) {
         transformer(tree, file)
       }
     })
-    .process(['# README', ''].join('\n'), function (error, file) {
+    .process('# README\n', function (error, file) {
       t.deepEqual(
         [error].concat(file.messages.map(String)),
         [null, '2:1: Error'],
@@ -436,7 +436,7 @@ test('control()', function (t) {
         transformer(tree, file)
       }
     })
-    .process(['# README', '', '*   List'].join('\n'), function (error, file) {
+    .process('# README\n\n*   List', function (error, file) {
       t.deepEqual(
         [error].concat(file.messages.map(String)),
         [null, '3:9: Error'],
@@ -492,7 +492,7 @@ test('control()', function (t) {
         transformer(tree, file)
       }
     })
-    .process(['Foo'].join('\n'), function (error, file) {
+    .process('Foo', function (error, file) {
       t.deepEqual(
         [error].concat(file.messages.map(String)),
         [null, '1:1: Error'],
@@ -504,16 +504,13 @@ test('control()', function (t) {
     .use(function () {
       return control({name: 'foo', marker: mdastMarker, test: 'html'})
     })
-    .process(
-      ['<!doctype html>', '', '<!--bar baz qux-->', ''].join('\n'),
-      function (error, file) {
-        t.deepEqual(
-          [error].concat(file.messages.map(String)),
-          [null],
-          'should ignore non-markers'
-        )
-      }
-    )
+    .process('<!doctype html>\n\n<!--bar baz qux-->\n', function (error, file) {
+      t.deepEqual(
+        [error].concat(file.messages.map(String)),
+        [null],
+        'should ignore non-markers'
+      )
+    })
 
   remark()
     .use(function () {
@@ -525,7 +522,7 @@ test('control()', function (t) {
       })
     })
     .process(
-      ['<!--foo ignore known-->', '', '<!--foo ignore unknown-->'].join('\n'),
+      '<!--foo ignore known-->\n\n<!--foo ignore unknown-->',
       function (error, file) {
         t.deepEqual(
           [error].concat(file.messages.map(String)),
@@ -550,16 +547,13 @@ test('control()', function (t) {
         transformer(tree, file)
       }
     })
-    .process(
-      ['<!--foo ignore bar-->', '', 'Foo'].join('\n'),
-      function (error, file) {
-        t.deepEqual(
-          [error].concat(file.messages.map(String)),
-          [null],
-          'should ignore by `source`, when given as a string'
-        )
-      }
-    )
+    .process('<!--foo ignore bar-->\n\nFoo', function (error, file) {
+      t.deepEqual(
+        [error].concat(file.messages.map(String)),
+        [null],
+        'should ignore by `source`, when given as a string'
+      )
+    })
 
   remark()
     .use(function () {
@@ -611,7 +605,7 @@ test('control()', function (t) {
         transformer(tree, file)
       }
     })
-    .process(['This is a paragraph.'].join('\n'), function (error, file) {
+    .process('This is a paragraph.', function (error, file) {
       t.deepEqual(
         [error].concat(file.messages.map(String)),
         [null],
@@ -635,7 +629,7 @@ test('control()', function (t) {
         transformer(tree, file)
       }
     })
-    .process(['This is a paragraph.'].join('\n'), function (error, file) {
+    .process('This is a paragraph.', function (error, file) {
       t.deepEqual(
         [error].concat(file.messages.map(String)),
         [null, '1:1-1:21: Error'],
