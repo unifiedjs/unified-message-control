@@ -215,7 +215,8 @@ function messageControl(options) {
 
 // Detect gaps in `tree`.
 function detectGaps(tree, file) {
-  var lastNode = tree.children[tree.children.length - 1]
+  var children = tree.children || []
+  var lastNode = children[children.length - 1]
   var offset = 0
   var gaps = []
   var gap

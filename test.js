@@ -727,5 +727,21 @@ test('control()', function (t) {
       )
     })
 
+  remark()
+    .use(function () {
+      return function (tree, file) {
+        file.message('Error')
+        delete tree.children
+        control({name: 'foo', marker: mdastMarker})(tree, file)
+      }
+    })
+    .process('', function (error, file) {
+      t.deepEqual(
+        [error].concat(file.messages.map(String)),
+        [null, '1:1: Error'],
+        'should not fail when there are messages but no `children` on `tree`'
+      )
+    })
+
   t.end()
 })
