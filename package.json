@@ -48,7 +48,7 @@
     "tinyify": "^3.0.0",
     "unified": "^9.0.0",
     "unist-util-is": "^4.0.0",
-    "xo": "^0.36.0"
+    "xo": "^0.37.0"
   },
   "scripts": {
     "format": "remark . -qfo && prettier . --write && xo --fix",
@@ -80,7 +80,7 @@
     "rules": {
       "guard-for-in": "off",
       "unicorn/explicit-length-check": "off",
-      "unicorn/no-fn-reference-in-iterator": "off",
+      "unicorn/no-array-callback-reference": "off",
       "unicorn/prefer-includes": "off",
       "unicorn/string-content": "off"
     },

@@ -44,9 +44,9 @@ test('control()', function (t) {
     })
     .process(
       ['<!--foo disable bar-->', '', 'This is a paragraph.'].join('\n'),
-      function (err, file) {
+      function (error, file) {
         t.deepEqual(
-          [err].concat(file.messages),
+          [error].concat(file.messages),
           [null],
           'should “disable” a message'
         )
@@ -69,9 +69,9 @@ test('control()', function (t) {
     })
     .process(
       ['<!--foo disable-->', '', 'This is a paragraph.'].join('\n'),
-      function (err, file) {
+      function (error, file) {
         t.deepEqual(
-          [err].concat(file.messages),
+          [error].concat(file.messages),
           [null],
           'should “disable” all message without `ruleId`s'
         )
@@ -102,9 +102,9 @@ test('control()', function (t) {
         '',
         'This is a paragraph.'
       ].join('\n'),
-      function (err, file) {
+      function (error, file) {
         t.deepEqual(
-          [err].concat(file.messages.map(String)),
+          [error].concat(file.messages.map(String)),
           [null, '5:1-5:21: Error'],
           'should support `reset`'
         )
@@ -128,9 +128,9 @@ test('control()', function (t) {
     })
     .process(
       ['<!--foo enable bar-->', '', 'This is a paragraph.'].join('\n'),
-      function (err, file) {
+      function (error, file) {
         t.deepEqual(
-          [err].concat(file.messages.map(String)),
+          [error].concat(file.messages.map(String)),
           [null, '3:1-3:21: Error'],
           'should enable with a marker, when `reset`'
         )
@@ -162,9 +162,9 @@ test('control()', function (t) {
         '',
         'This is a paragraph.'
       ].join('\n'),
-      function (err, file) {
+      function (error, file) {
         t.deepEqual(
-          [err].concat(file.messages.map(String)),
+          [error].concat(file.messages.map(String)),
           [null, '7:1-7:21: Error'],
           'should enable a message'
         )
@@ -196,9 +196,9 @@ test('control()', function (t) {
         '',
         'This is a paragraph.'
       ].join('\n'),
-      function (err, file) {
+      function (error, file) {
         t.deepEqual(
-          [err].concat(file.messages.map(String)),
+          [error].concat(file.messages.map(String)),
           [null, '7:1-7:21: Error'],
           'should enable all message without `ruleId`s'
         )
@@ -228,9 +228,9 @@ test('control()', function (t) {
         '',
         'This is a paragraph.'
       ].join('\n'),
-      function (err, file) {
+      function (error, file) {
         t.deepEqual(
-          [err].concat(file.messages.map(String)),
+          [error].concat(file.messages.map(String)),
           [null, '5:1-5:21: Error'],
           'should ignore a message'
         )
@@ -260,9 +260,9 @@ test('control()', function (t) {
         '',
         'This is a paragraph.'
       ].join('\n'),
-      function (err, file) {
+      function (error, file) {
         t.deepEqual(
-          [err].concat(file.messages.map(String)),
+          [error].concat(file.messages.map(String)),
           [null, '5:1-5:21: Error'],
           'should ignore all message without `ruleId`s'
         )
@@ -286,9 +286,9 @@ test('control()', function (t) {
     })
     .process(
       ['<!--foo ignore bar baz-->', '', 'This is a paragraph.'].join('\n'),
-      function (err, file) {
+      function (error, file) {
         t.deepEqual(
-          [err].concat(file.messages.map(String)),
+          [error].concat(file.messages.map(String)),
           [null],
           'should ignore multiple rules'
         )
@@ -299,9 +299,9 @@ test('control()', function (t) {
     .use(function () {
       return control({name: 'foo', marker: mdastMarker, test: 'html'})
     })
-    .process('<!--foo test-->', function (err) {
+    .process('<!--foo test-->', function (error) {
       t.equal(
-        String(err),
+        String(error),
         '1:1-1:16: Unknown keyword `test`: ' +
           "expected `'enable'`, `'disable'`, or `'ignore'`",
         'should fail on invalid verbs'
@@ -334,9 +334,9 @@ test('control()', function (t) {
         '',
         '## Another header'
       ].join('\n'),
-      function (err, file) {
+      function (error, file) {
         t.deepEqual(
-          [err].concat(file.messages.map(String)),
+          [error].concat(file.messages.map(String)),
           [null, '7:1: Error'],
           'should ignore gaps'
         )
@@ -369,9 +369,9 @@ test('control()', function (t) {
         '',
         '*  [This is removed](#this-is-removed)'
       ].join('\n'),
-      function (err, file) {
+      function (error, file) {
         t.deepEqual(
-          [err].concat(file.messages.map(String)),
+          [error].concat(file.messages.map(String)),
           [null],
           'should ignore final gaps'
         )
@@ -392,9 +392,9 @@ test('control()', function (t) {
         transformer(tree, file)
       }
     })
-    .process('', function (err, file) {
+    .process('', function (error, file) {
       t.deepEqual(
-        [err].concat(file.messages.map(String)),
+        [error].concat(file.messages.map(String)),
         [null, '1:1: Error'],
         'should support empty documents'
       )
@@ -414,9 +414,9 @@ test('control()', function (t) {
         transformer(tree, file)
       }
     })
-    .process(['# README', ''].join('\n'), function (err, file) {
+    .process(['# README', ''].join('\n'), function (error, file) {
       t.deepEqual(
-        [err].concat(file.messages.map(String)),
+        [error].concat(file.messages.map(String)),
         [null, '2:1: Error'],
         'should message at the end of the document'
       )
@@ -436,9 +436,9 @@ test('control()', function (t) {
         transformer(tree, file)
       }
     })
-    .process(['# README', '', '*   List'].join('\n'), function (err, file) {
+    .process(['# README', '', '*   List'].join('\n'), function (error, file) {
       t.deepEqual(
-        [err].concat(file.messages.map(String)),
+        [error].concat(file.messages.map(String)),
         [null, '3:9: Error'],
         'should message at the end of the document'
       )
@@ -469,9 +469,9 @@ test('control()', function (t) {
         '',
         'This is a paragraph.'
       ].join('\n'),
-      function (err, file) {
+      function (error, file) {
         t.deepEqual(
-          [err].concat(file.messages.map(String)),
+          [error].concat(file.messages.map(String)),
           [null],
           'should ignore double disables'
         )
@@ -492,9 +492,9 @@ test('control()', function (t) {
         transformer(tree, file)
       }
     })
-    .process(['Foo'].join('\n'), function (err, file) {
+    .process(['Foo'].join('\n'), function (error, file) {
       t.deepEqual(
-        [err].concat(file.messages.map(String)),
+        [error].concat(file.messages.map(String)),
         [null, '1:1: Error'],
         'should not ignore messages without location information'
       )
@@ -506,9 +506,9 @@ test('control()', function (t) {
     })
     .process(
       ['<!doctype html>', '', '<!--bar baz qux-->', ''].join('\n'),
-      function (err, file) {
+      function (error, file) {
         t.deepEqual(
-          [err].concat(file.messages.map(String)),
+          [error].concat(file.messages.map(String)),
           [null],
           'should ignore non-markers'
         )
@@ -526,9 +526,9 @@ test('control()', function (t) {
     })
     .process(
       ['<!--foo ignore known-->', '', '<!--foo ignore unknown-->'].join('\n'),
-      function (err, file) {
+      function (error, file) {
         t.deepEqual(
-          [err].concat(file.messages.map(String)),
+          [error].concat(file.messages.map(String)),
           [null, "3:1-3:26: Unknown rule: cannot ignore `'unknown'`"],
           'should support a list of `known` values, and warn on unknowns'
         )
@@ -552,9 +552,9 @@ test('control()', function (t) {
     })
     .process(
       ['<!--foo ignore bar-->', '', 'Foo'].join('\n'),
-      function (err, file) {
+      function (error, file) {
         t.deepEqual(
-          [err].concat(file.messages.map(String)),
+          [error].concat(file.messages.map(String)),
           [null],
           'should ignore by `source`, when given as a string'
         )
@@ -587,9 +587,9 @@ test('control()', function (t) {
         '',
         'Golf'
       ].join('\n'),
-      function (err, file) {
+      function (error, file) {
         t.deepEqual(
-          [err].concat(file.messages.map(String)),
+          [error].concat(file.messages.map(String)),
           [null],
           'should ignore by `source`, when given as an array'
         )
@@ -611,9 +611,9 @@ test('control()', function (t) {
         transformer(tree, file)
       }
     })
-    .process(['This is a paragraph.'].join('\n'), function (err, file) {
+    .process(['This is a paragraph.'].join('\n'), function (error, file) {
       t.deepEqual(
-        [err].concat(file.messages.map(String)),
+        [error].concat(file.messages.map(String)),
         [null],
         'should support initial `disable`s'
       )
@@ -635,9 +635,9 @@ test('control()', function (t) {
         transformer(tree, file)
       }
     })
-    .process(['This is a paragraph.'].join('\n'), function (err, file) {
+    .process(['This is a paragraph.'].join('\n'), function (error, file) {
       t.deepEqual(
-        [err].concat(file.messages.map(String)),
+        [error].concat(file.messages.map(String)),
         [null, '1:1-1:21: Error'],
         'should support initial `enable`s'
       )
@@ -657,9 +657,9 @@ test('control()', function (t) {
         transformer(tree, file)
       }
     })
-    .process('<!--foo disable bar-->\n', function (err, file) {
+    .process('<!--foo disable bar-->\n', function (error, file) {
       t.deepEqual(
-        [err].concat(file.messages.map(String)),
+        [error].concat(file.messages.map(String)),
         [null],
         'should disable messages at the start of a marker'
       )
@@ -680,9 +680,9 @@ test('control()', function (t) {
         transformer(tree, file)
       }
     })
-    .process('<!--foo enable-->\n', function (err, file) {
+    .process('<!--foo enable-->\n', function (error, file) {
       t.deepEqual(
-        [err].concat(file.messages.map(String)),
+        [error].concat(file.messages.map(String)),
         [null, '1:1: Error'],
         'should enable messages at the start of a marker'
       )
@@ -702,9 +702,9 @@ test('control()', function (t) {
         transformer(tree, file)
       }
     })
-    .process('<!--foo disable bar-->\n', function (err, file) {
+    .process('<!--foo disable bar-->\n', function (error, file) {
       t.deepEqual(
-        [err].concat(file.messages.map(String)),
+        [error].concat(file.messages.map(String)),
         [null],
         'should disable messages without positional info (at the start of a document)'
       )
@@ -725,9 +725,9 @@ test('control()', function (t) {
         transformer(tree, file)
       }
     })
-    .process('<!--foo enable-->\n', function (err, file) {
+    .process('<!--foo enable-->\n', function (error, file) {
       t.deepEqual(
-        [err].concat(file.messages.map(String)),
+        [error].concat(file.messages.map(String)),
         [null, '1:1: Error'],
         'should enable messages without positional info (at the start of a document)'
       )
