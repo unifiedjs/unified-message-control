@@ -4,9 +4,9 @@ import remarkToc from 'remark-toc'
 import mdastCommentMarker from 'mdast-comment-marker'
 import {messageControl} from './index.js'
 
-test('messageControl()', function (t) {
+test('messageControl()', (t) => {
   t.throws(
-    function () {
+    () => {
       remark().use(messageControl).freeze()
     },
     /Expected `name` in `options`, got `undefined`/,
@@ -14,22 +14,22 @@ test('messageControl()', function (t) {
   )
 
   t.throws(
-    function () {
+    () => {
       remark().use(messageControl, {name: 'foo'}).freeze()
     },
     /Expected `marker` in `options`, got `undefined`/,
     'should throw without marker'
   )
 
-  t.doesNotThrow(function () {
+  t.doesNotThrow(() => {
     remark()
       .use(messageControl, {name: 'foo', marker() {}})
       .freeze()
   }, 'should *not* throw without test')
 
   remark()
-    .use(function () {
-      var transformer = messageControl({
+    .use(() => {
+      const transformer = messageControl({
         name: 'foo',
         marker: mdastCommentMarker,
         test: 'html'
@@ -42,7 +42,7 @@ test('messageControl()', function (t) {
     })
     .process(
       '<!--foo disable bar-->\n\nThis is a paragraph.',
-      function (error, file) {
+      (error, file) => {
         t.deepEqual(
           [error].concat(file.messages),
           [null],
@@ -52,8 +52,8 @@ test('messageControl()', function (t) {
     )
 
   remark()
-    .use(function () {
-      var transformer = messageControl({
+    .use(() => {
+      const transformer = messageControl({
         name: 'foo',
         marker: mdastCommentMarker,
         test: 'html'
@@ -65,20 +65,17 @@ test('messageControl()', function (t) {
         transformer(tree, file)
       }
     })
-    .process(
-      '<!--foo disable-->\n\nThis is a paragraph.',
-      function (error, file) {
-        t.deepEqual(
-          [error].concat(file.messages),
-          [null],
-          'should “disable” all message without `ruleId`s'
-        )
-      }
-    )
+    .process('<!--foo disable-->\n\nThis is a paragraph.', (error, file) => {
+      t.deepEqual(
+        [error].concat(file.messages),
+        [null],
+        'should “disable” all message without `ruleId`s'
+      )
+    })
 
   remark()
-    .use(function () {
-      var transformer = messageControl({
+    .use(() => {
+      const transformer = messageControl({
         name: 'foo',
         reset: true,
         marker: mdastCommentMarker,
@@ -100,9 +97,9 @@ test('messageControl()', function (t) {
         '',
         'This is a paragraph.'
       ].join('\n'),
-      function (error, file) {
+      (error, file) => {
         t.deepEqual(
-          [error].concat(file.messages.map(String)),
+          [error].concat(file.messages.map((m) => String(m))),
           [null, '5:1-5:21: Error'],
           'should support `reset`'
         )
@@ -110,8 +107,8 @@ test('messageControl()', function (t) {
     )
 
   remark()
-    .use(function () {
-      var transformer = messageControl({
+    .use(() => {
+      const transformer = messageControl({
         name: 'foo',
         reset: true,
         marker: mdastCommentMarker,
@@ -124,20 +121,17 @@ test('messageControl()', function (t) {
         transformer(tree, file)
       }
     })
-    .process(
-      '<!--foo enable bar-->\n\nThis is a paragraph.',
-      function (error, file) {
-        t.deepEqual(
-          [error].concat(file.messages.map(String)),
-          [null, '3:1-3:21: Error'],
-          'should enable with a marker, when `reset`'
-        )
-      }
-    )
+    .process('<!--foo enable bar-->\n\nThis is a paragraph.', (error, file) => {
+      t.deepEqual(
+        [error].concat(file.messages.map((m) => String(m))),
+        [null, '3:1-3:21: Error'],
+        'should enable with a marker, when `reset`'
+      )
+    })
 
   remark()
-    .use(function () {
-      var transformer = messageControl({
+    .use(() => {
+      const transformer = messageControl({
         name: 'foo',
         marker: mdastCommentMarker,
         test: 'html'
@@ -160,9 +154,9 @@ test('messageControl()', function (t) {
         '',
         'This is a paragraph.'
       ].join('\n'),
-      function (error, file) {
+      (error, file) => {
         t.deepEqual(
-          [error].concat(file.messages.map(String)),
+          [error].concat(file.messages.map((m) => String(m))),
           [null, '7:1-7:21: Error'],
           'should enable a message'
         )
@@ -170,8 +164,8 @@ test('messageControl()', function (t) {
     )
 
   remark()
-    .use(function () {
-      var transformer = messageControl({
+    .use(() => {
+      const transformer = messageControl({
         name: 'foo',
         marker: mdastCommentMarker,
         test: 'html'
@@ -194,9 +188,9 @@ test('messageControl()', function (t) {
         '',
         'This is a paragraph.'
       ].join('\n'),
-      function (error, file) {
+      (error, file) => {
         t.deepEqual(
-          [error].concat(file.messages.map(String)),
+          [error].concat(file.messages.map((m) => String(m))),
           [null, '7:1-7:21: Error'],
           'should enable all message without `ruleId`s'
         )
@@ -204,8 +198,8 @@ test('messageControl()', function (t) {
     )
 
   remark()
-    .use(function () {
-      var transformer = messageControl({
+    .use(() => {
+      const transformer = messageControl({
         name: 'foo',
         marker: mdastCommentMarker,
         test: 'html'
@@ -226,9 +220,9 @@ test('messageControl()', function (t) {
         '',
         'This is a paragraph.'
       ].join('\n'),
-      function (error, file) {
+      (error, file) => {
         t.deepEqual(
-          [error].concat(file.messages.map(String)),
+          [error].concat(file.messages.map((m) => String(m))),
           [null, '5:1-5:21: Error'],
           'should ignore a message'
         )
@@ -236,8 +230,8 @@ test('messageControl()', function (t) {
     )
 
   remark()
-    .use(function () {
-      var transformer = messageControl({
+    .use(() => {
+      const transformer = messageControl({
         name: 'foo',
         marker: mdastCommentMarker,
         test: 'html'
@@ -258,9 +252,9 @@ test('messageControl()', function (t) {
         '',
         'This is a paragraph.'
       ].join('\n'),
-      function (error, file) {
+      (error, file) => {
         t.deepEqual(
-          [error].concat(file.messages.map(String)),
+          [error].concat(file.messages.map((m) => String(m))),
           [null, '5:1-5:21: Error'],
           'should ignore all message without `ruleId`s'
         )
@@ -268,8 +262,8 @@ test('messageControl()', function (t) {
     )
 
   remark()
-    .use(function () {
-      var transformer = messageControl({
+    .use(() => {
+      const transformer = messageControl({
         name: 'foo',
         marker: mdastCommentMarker,
         test: 'html'
@@ -284,9 +278,9 @@ test('messageControl()', function (t) {
     })
     .process(
       '<!--foo ignore bar baz-->\n\nThis is a paragraph.',
-      function (error, file) {
+      (error, file) => {
         t.deepEqual(
-          [error].concat(file.messages.map(String)),
+          [error].concat(file.messages.map((m) => String(m))),
           [null],
           'should ignore multiple rules'
         )
@@ -294,14 +288,14 @@ test('messageControl()', function (t) {
     )
 
   remark()
-    .use(function () {
+    .use(() => {
       return messageControl({
         name: 'foo',
         marker: mdastCommentMarker,
         test: 'html'
       })
     })
-    .process('<!--foo test-->', function (error) {
+    .process('<!--foo test-->', (error) => {
       t.equal(
         String(error),
         '1:1-1:16: Unknown keyword `test`: ' +
@@ -312,8 +306,8 @@ test('messageControl()', function (t) {
 
   remark()
     .use(remarkToc)
-    .use(function () {
-      var transformer = messageControl({
+    .use(() => {
+      const transformer = messageControl({
         name: 'foo',
         marker: mdastCommentMarker,
         test: 'html'
@@ -336,9 +330,9 @@ test('messageControl()', function (t) {
         '',
         '## Another header'
       ].join('\n'),
-      function (error, file) {
+      (error, file) => {
         t.deepEqual(
-          [error].concat(file.messages.map(String)),
+          [error].concat(file.messages.map((m) => String(m))),
           [null, '7:1: Error'],
           'should ignore gaps'
         )
@@ -346,8 +340,8 @@ test('messageControl()', function (t) {
     )
 
   remark()
-    .use(function () {
-      var transformer = messageControl({
+    .use(() => {
+      const transformer = messageControl({
         name: 'foo',
         marker: mdastCommentMarker,
         test: 'html'
@@ -371,9 +365,9 @@ test('messageControl()', function (t) {
         '',
         '*  [This is removed](#this-is-removed)'
       ].join('\n'),
-      function (error, file) {
+      (error, file) => {
         t.deepEqual(
-          [error].concat(file.messages.map(String)),
+          [error].concat(file.messages.map((m) => String(m))),
           [null],
           'should ignore final gaps'
         )
@@ -381,8 +375,8 @@ test('messageControl()', function (t) {
     )
 
   remark()
-    .use(function () {
-      var transformer = messageControl({
+    .use(() => {
+      const transformer = messageControl({
         name: 'foo',
         marker: mdastCommentMarker,
         test: 'html'
@@ -394,17 +388,17 @@ test('messageControl()', function (t) {
         transformer(tree, file)
       }
     })
-    .process('', function (error, file) {
+    .process('', (error, file) => {
       t.deepEqual(
-        [error].concat(file.messages.map(String)),
+        [error].concat(file.messages.map((m) => String(m))),
         [null, '1:1: Error'],
         'should support empty documents'
       )
     })
 
   remark()
-    .use(function () {
-      var transformer = messageControl({
+    .use(() => {
+      const transformer = messageControl({
         name: 'foo',
         marker: mdastCommentMarker,
         test: 'html'
@@ -416,17 +410,17 @@ test('messageControl()', function (t) {
         transformer(tree, file)
       }
     })
-    .process('# README\n', function (error, file) {
+    .process('# README\n', (error, file) => {
       t.deepEqual(
-        [error].concat(file.messages.map(String)),
+        [error].concat(file.messages.map((m) => String(m))),
         [null, '2:1: Error'],
         'should message at the end of the document'
       )
     })
 
   remark()
-    .use(function () {
-      var transformer = messageControl({
+    .use(() => {
+      const transformer = messageControl({
         name: 'foo',
         marker: mdastCommentMarker,
         test: 'html'
@@ -438,17 +432,17 @@ test('messageControl()', function (t) {
         transformer(tree, file)
       }
     })
-    .process('# README\n\n*   List', function (error, file) {
+    .process('# README\n\n*   List', (error, file) => {
       t.deepEqual(
-        [error].concat(file.messages.map(String)),
+        [error].concat(file.messages.map((m) => String(m))),
         [null, '3:9: Error'],
         'should message at the end of the document'
       )
     })
 
   remark()
-    .use(function () {
-      var transformer = messageControl({
+    .use(() => {
+      const transformer = messageControl({
         name: 'foo',
         marker: mdastCommentMarker,
         test: 'html'
@@ -471,9 +465,9 @@ test('messageControl()', function (t) {
         '',
         'This is a paragraph.'
       ].join('\n'),
-      function (error, file) {
+      (error, file) => {
         t.deepEqual(
-          [error].concat(file.messages.map(String)),
+          [error].concat(file.messages.map((m) => String(m))),
           [null],
           'should ignore double disables'
         )
@@ -481,8 +475,8 @@ test('messageControl()', function (t) {
     )
 
   remark()
-    .use(function () {
-      var transformer = messageControl({
+    .use(() => {
+      const transformer = messageControl({
         name: 'foo',
         marker: mdastCommentMarker,
         test: 'html'
@@ -494,32 +488,32 @@ test('messageControl()', function (t) {
         transformer(tree, file)
       }
     })
-    .process('Foo', function (error, file) {
+    .process('Foo', (error, file) => {
       t.deepEqual(
-        [error].concat(file.messages.map(String)),
+        [error].concat(file.messages.map((m) => String(m))),
         [null, '1:1: Error'],
         'should not ignore messages without location information'
       )
     })
 
   remark()
-    .use(function () {
+    .use(() => {
       return messageControl({
         name: 'foo',
         marker: mdastCommentMarker,
         test: 'html'
       })
     })
-    .process('<!doctype html>\n\n<!--bar baz qux-->\n', function (error, file) {
+    .process('<!doctype html>\n\n<!--bar baz qux-->\n', (error, file) => {
       t.deepEqual(
-        [error].concat(file.messages.map(String)),
+        [error].concat(file.messages.map((m) => String(m))),
         [null],
         'should ignore non-markers'
       )
     })
 
   remark()
-    .use(function () {
+    .use(() => {
       return messageControl({
         name: 'foo',
         known: ['known'],
@@ -529,9 +523,9 @@ test('messageControl()', function (t) {
     })
     .process(
       '<!--foo ignore known-->\n\n<!--foo ignore unknown-->',
-      function (error, file) {
+      (error, file) => {
         t.deepEqual(
-          [error].concat(file.messages.map(String)),
+          [error].concat(file.messages.map((m) => String(m))),
           [null, "3:1-3:26: Unknown rule: cannot ignore `'unknown'`"],
           'should support a list of `known` values, and warn on unknowns'
         )
@@ -539,8 +533,8 @@ test('messageControl()', function (t) {
     )
 
   remark()
-    .use(function () {
-      var transformer = messageControl({
+    .use(() => {
+      const transformer = messageControl({
         name: 'foo',
         source: 'baz',
         marker: mdastCommentMarker,
@@ -553,17 +547,17 @@ test('messageControl()', function (t) {
         transformer(tree, file)
       }
     })
-    .process('<!--foo ignore bar-->\n\nFoo', function (error, file) {
+    .process('<!--foo ignore bar-->\n\nFoo', (error, file) => {
       t.deepEqual(
-        [error].concat(file.messages.map(String)),
+        [error].concat(file.messages.map((m) => String(m))),
         [null],
         'should ignore by `source`, when given as a string'
       )
     })
 
   remark()
-    .use(function () {
-      var transformer = messageControl({
+    .use(() => {
+      const transformer = messageControl({
         name: 'alpha',
         source: ['bravo', 'charlie'],
         marker: mdastCommentMarker,
@@ -587,9 +581,9 @@ test('messageControl()', function (t) {
         '',
         'Golf'
       ].join('\n'),
-      function (error, file) {
+      (error, file) => {
         t.deepEqual(
-          [error].concat(file.messages.map(String)),
+          [error].concat(file.messages.map((m) => String(m))),
           [null],
           'should ignore by `source`, when given as an array'
         )
@@ -597,8 +591,8 @@ test('messageControl()', function (t) {
     )
 
   remark()
-    .use(function () {
-      var transformer = messageControl({
+    .use(() => {
+      const transformer = messageControl({
         name: 'foo',
         disable: ['bar'],
         marker: mdastCommentMarker,
@@ -611,17 +605,17 @@ test('messageControl()', function (t) {
         transformer(tree, file)
       }
     })
-    .process('This is a paragraph.', function (error, file) {
+    .process('This is a paragraph.', (error, file) => {
       t.deepEqual(
-        [error].concat(file.messages.map(String)),
+        [error].concat(file.messages.map((m) => String(m))),
         [null],
         'should support initial `disable`s'
       )
     })
 
   remark()
-    .use(function () {
-      var transformer = messageControl({
+    .use(() => {
+      const transformer = messageControl({
         name: 'foo',
         reset: true,
         enable: ['bar'],
@@ -635,17 +629,17 @@ test('messageControl()', function (t) {
         transformer(tree, file)
       }
     })
-    .process('This is a paragraph.', function (error, file) {
+    .process('This is a paragraph.', (error, file) => {
       t.deepEqual(
-        [error].concat(file.messages.map(String)),
+        [error].concat(file.messages.map((m) => String(m))),
         [null, '1:1-1:21: Error'],
         'should support initial `enable`s'
       )
     })
 
   remark()
-    .use(function () {
-      var transformer = messageControl({
+    .use(() => {
+      const transformer = messageControl({
         name: 'foo',
         marker: mdastCommentMarker,
         test: 'html'
@@ -657,17 +651,17 @@ test('messageControl()', function (t) {
         transformer(tree, file)
       }
     })
-    .process('<!--foo disable bar-->\n', function (error, file) {
+    .process('<!--foo disable bar-->\n', (error, file) => {
       t.deepEqual(
-        [error].concat(file.messages.map(String)),
+        [error].concat(file.messages.map((m) => String(m))),
         [null],
         'should disable messages at the start of a marker'
       )
     })
 
   remark()
-    .use(function () {
-      var transformer = messageControl({
+    .use(() => {
+      const transformer = messageControl({
         name: 'foo',
         marker: mdastCommentMarker,
         test: 'html',
@@ -680,17 +674,17 @@ test('messageControl()', function (t) {
         transformer(tree, file)
       }
     })
-    .process('<!--foo enable-->\n', function (error, file) {
+    .process('<!--foo enable-->\n', (error, file) => {
       t.deepEqual(
-        [error].concat(file.messages.map(String)),
+        [error].concat(file.messages.map((m) => String(m))),
         [null, '1:1: Error'],
         'should enable messages at the start of a marker'
       )
     })
 
   remark()
-    .use(function () {
-      var transformer = messageControl({
+    .use(() => {
+      const transformer = messageControl({
         name: 'foo',
         marker: mdastCommentMarker,
         test: 'html'
@@ -702,17 +696,17 @@ test('messageControl()', function (t) {
         transformer(tree, file)
       }
     })
-    .process('<!--foo disable bar-->\n', function (error, file) {
+    .process('<!--foo disable bar-->\n', (error, file) => {
       t.deepEqual(
-        [error].concat(file.messages.map(String)),
+        [error].concat(file.messages.map((m) => String(m))),
         [null],
         'should disable messages without positional info (at the start of a document)'
       )
     })
 
   remark()
-    .use(function () {
-      var transformer = messageControl({
+    .use(() => {
+      const transformer = messageControl({
         name: 'foo',
         marker: mdastCommentMarker,
         test: 'html',
@@ -725,25 +719,25 @@ test('messageControl()', function (t) {
         transformer(tree, file)
       }
     })
-    .process('<!--foo enable-->\n', function (error, file) {
+    .process('<!--foo enable-->\n', (error, file) => {
       t.deepEqual(
-        [error].concat(file.messages.map(String)),
+        [error].concat(file.messages.map((m) => String(m))),
         [null, '1:1: Error'],
         'should enable messages without positional info (at the start of a document)'
       )
     })
 
   remark()
-    .use(function () {
+    .use(() => {
       return function (tree, file) {
         file.message('Error')
         delete tree.children
         messageControl({name: 'foo', marker: mdastCommentMarker})(tree, file)
       }
     })
-    .process('', function (error, file) {
+    .process('', (error, file) => {
       t.deepEqual(
-        [error].concat(file.messages.map(String)),
+        [error].concat(file.messages.map((m) => String(m))),
         [null, '1:1: Error'],
         'should not fail when there are messages but no `children` on `tree`'
       )
