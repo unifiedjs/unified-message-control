@@ -1,11 +1,7 @@
-'use strict'
+import location from 'vfile-location'
+import visit from 'unist-util-visit'
 
-var location = require('vfile-location')
-var visit = require('unist-util-visit')
-
-module.exports = messageControl
-
-function messageControl(options) {
+export function messageControl(options) {
   var settings = options || {}
   var enable = settings.enable || []
   var disable = settings.disable || []
@@ -173,7 +169,7 @@ function messageControl(options) {
       previousState = getState(ruleId)
 
       if (state !== previousState) {
-        markers.push({state: state, position: pos})
+        markers.push({state, position: pos})
       }
 
       // Toggle all known rules.

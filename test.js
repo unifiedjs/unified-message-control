@@ -1,15 +1,13 @@
-'use strict'
+import test from 'tape'
+import remark from 'remark'
+import remarkToc from 'remark-toc'
+import mdastCommentMarker from 'mdast-comment-marker'
+import {messageControl} from './index.js'
 
-var test = require('tape')
-var remark = require('remark')
-var toc = require('remark-toc')
-var mdastMarker = require('mdast-comment-marker')
-var control = require('.')
-
-test('control()', function (t) {
+test('messageControl()', function (t) {
   t.throws(
     function () {
-      remark().use(control).freeze()
+      remark().use(messageControl).freeze()
     },
     /Expected `name` in `options`, got `undefined`/,
     'should throw without `name`'
@@ -17,7 +15,7 @@ test('control()', function (t) {
 
   t.throws(
     function () {
-      remark().use(control, {name: 'foo'}).freeze()
+      remark().use(messageControl, {name: 'foo'}).freeze()
     },
     /Expected `marker` in `options`, got `undefined`/,
     'should throw without marker'
@@ -25,15 +23,15 @@ test('control()', function (t) {
 
   t.doesNotThrow(function () {
     remark()
-      .use(control, {name: 'foo', marker: function () {}})
+      .use(messageControl, {name: 'foo', marker() {}})
       .freeze()
   }, 'should *not* throw without test')
 
   remark()
     .use(function () {
-      var transformer = control({
+      var transformer = messageControl({
         name: 'foo',
-        marker: mdastMarker,
+        marker: mdastCommentMarker,
         test: 'html'
       })
 
@@ -55,9 +53,9 @@ test('control()', function (t) {
 
   remark()
     .use(function () {
-      var transformer = control({
+      var transformer = messageControl({
         name: 'foo',
-        marker: mdastMarker,
+        marker: mdastCommentMarker,
         test: 'html'
       })
 
@@ -80,10 +78,10 @@ test('control()', function (t) {
 
   remark()
     .use(function () {
-      var transformer = control({
+      var transformer = messageControl({
         name: 'foo',
         reset: true,
-        marker: mdastMarker,
+        marker: mdastCommentMarker,
         test: 'html'
       })
 
@@ -113,10 +111,10 @@ test('control()', function (t) {
 
   remark()
     .use(function () {
-      var transformer = control({
+      var transformer = messageControl({
         name: 'foo',
         reset: true,
-        marker: mdastMarker,
+        marker: mdastCommentMarker,
         test: 'html'
       })
 
@@ -139,9 +137,9 @@ test('control()', function (t) {
 
   remark()
     .use(function () {
-      var transformer = control({
+      var transformer = messageControl({
         name: 'foo',
-        marker: mdastMarker,
+        marker: mdastCommentMarker,
         test: 'html'
       })
 
@@ -173,9 +171,9 @@ test('control()', function (t) {
 
   remark()
     .use(function () {
-      var transformer = control({
+      var transformer = messageControl({
         name: 'foo',
-        marker: mdastMarker,
+        marker: mdastCommentMarker,
         test: 'html'
       })
 
@@ -207,9 +205,9 @@ test('control()', function (t) {
 
   remark()
     .use(function () {
-      var transformer = control({
+      var transformer = messageControl({
         name: 'foo',
-        marker: mdastMarker,
+        marker: mdastCommentMarker,
         test: 'html'
       })
 
@@ -239,9 +237,9 @@ test('control()', function (t) {
 
   remark()
     .use(function () {
-      var transformer = control({
+      var transformer = messageControl({
         name: 'foo',
-        marker: mdastMarker,
+        marker: mdastCommentMarker,
         test: 'html'
       })
 
@@ -271,9 +269,9 @@ test('control()', function (t) {
 
   remark()
     .use(function () {
-      var transformer = control({
+      var transformer = messageControl({
         name: 'foo',
-        marker: mdastMarker,
+        marker: mdastCommentMarker,
         test: 'html'
       })
 
@@ -297,7 +295,11 @@ test('control()', function (t) {
 
   remark()
     .use(function () {
-      return control({name: 'foo', marker: mdastMarker, test: 'html'})
+      return messageControl({
+        name: 'foo',
+        marker: mdastCommentMarker,
+        test: 'html'
+      })
     })
     .process('<!--foo test-->', function (error) {
       t.equal(
@@ -309,11 +311,11 @@ test('control()', function (t) {
     })
 
   remark()
-    .use(toc)
+    .use(remarkToc)
     .use(function () {
-      var transformer = control({
+      var transformer = messageControl({
         name: 'foo',
-        marker: mdastMarker,
+        marker: mdastCommentMarker,
         test: 'html'
       })
 
@@ -345,9 +347,9 @@ test('control()', function (t) {
 
   remark()
     .use(function () {
-      var transformer = control({
+      var transformer = messageControl({
         name: 'foo',
-        marker: mdastMarker,
+        marker: mdastCommentMarker,
         test: 'html'
       })
 
@@ -380,9 +382,9 @@ test('control()', function (t) {
 
   remark()
     .use(function () {
-      var transformer = control({
+      var transformer = messageControl({
         name: 'foo',
-        marker: mdastMarker,
+        marker: mdastCommentMarker,
         test: 'html'
       })
 
@@ -402,9 +404,9 @@ test('control()', function (t) {
 
   remark()
     .use(function () {
-      var transformer = control({
+      var transformer = messageControl({
         name: 'foo',
-        marker: mdastMarker,
+        marker: mdastCommentMarker,
         test: 'html'
       })
 
@@ -424,9 +426,9 @@ test('control()', function (t) {
 
   remark()
     .use(function () {
-      var transformer = control({
+      var transformer = messageControl({
         name: 'foo',
-        marker: mdastMarker,
+        marker: mdastCommentMarker,
         test: 'html'
       })
 
@@ -446,9 +448,9 @@ test('control()', function (t) {
 
   remark()
     .use(function () {
-      var transformer = control({
+      var transformer = messageControl({
         name: 'foo',
-        marker: mdastMarker,
+        marker: mdastCommentMarker,
         test: 'html'
       })
 
@@ -480,9 +482,9 @@ test('control()', function (t) {
 
   remark()
     .use(function () {
-      var transformer = control({
+      var transformer = messageControl({
         name: 'foo',
-        marker: mdastMarker,
+        marker: mdastCommentMarker,
         test: 'html'
       })
 
@@ -502,7 +504,11 @@ test('control()', function (t) {
 
   remark()
     .use(function () {
-      return control({name: 'foo', marker: mdastMarker, test: 'html'})
+      return messageControl({
+        name: 'foo',
+        marker: mdastCommentMarker,
+        test: 'html'
+      })
     })
     .process('<!doctype html>\n\n<!--bar baz qux-->\n', function (error, file) {
       t.deepEqual(
@@ -514,10 +520,10 @@ test('control()', function (t) {
 
   remark()
     .use(function () {
-      return control({
+      return messageControl({
         name: 'foo',
         known: ['known'],
-        marker: mdastMarker,
+        marker: mdastCommentMarker,
         test: 'html'
       })
     })
@@ -534,10 +540,10 @@ test('control()', function (t) {
 
   remark()
     .use(function () {
-      var transformer = control({
+      var transformer = messageControl({
         name: 'foo',
         source: 'baz',
-        marker: mdastMarker,
+        marker: mdastCommentMarker,
         test: 'html'
       })
 
@@ -557,10 +563,10 @@ test('control()', function (t) {
 
   remark()
     .use(function () {
-      var transformer = control({
+      var transformer = messageControl({
         name: 'alpha',
         source: ['bravo', 'charlie'],
-        marker: mdastMarker,
+        marker: mdastCommentMarker,
         test: 'html'
       })
 
@@ -592,10 +598,10 @@ test('control()', function (t) {
 
   remark()
     .use(function () {
-      var transformer = control({
+      var transformer = messageControl({
         name: 'foo',
         disable: ['bar'],
-        marker: mdastMarker,
+        marker: mdastCommentMarker,
         test: 'html'
       })
 
@@ -615,11 +621,11 @@ test('control()', function (t) {
 
   remark()
     .use(function () {
-      var transformer = control({
+      var transformer = messageControl({
         name: 'foo',
         reset: true,
         enable: ['bar'],
-        marker: mdastMarker,
+        marker: mdastCommentMarker,
         test: 'html'
       })
 
@@ -639,9 +645,9 @@ test('control()', function (t) {
 
   remark()
     .use(function () {
-      var transformer = control({
+      var transformer = messageControl({
         name: 'foo',
-        marker: mdastMarker,
+        marker: mdastCommentMarker,
         test: 'html'
       })
 
@@ -661,9 +667,9 @@ test('control()', function (t) {
 
   remark()
     .use(function () {
-      var transformer = control({
+      var transformer = messageControl({
         name: 'foo',
-        marker: mdastMarker,
+        marker: mdastCommentMarker,
         test: 'html',
         reset: true
       })
@@ -684,9 +690,9 @@ test('control()', function (t) {
 
   remark()
     .use(function () {
-      var transformer = control({
+      var transformer = messageControl({
         name: 'foo',
-        marker: mdastMarker,
+        marker: mdastCommentMarker,
         test: 'html'
       })
 
@@ -706,9 +712,9 @@ test('control()', function (t) {
 
   remark()
     .use(function () {
-      var transformer = control({
+      var transformer = messageControl({
         name: 'foo',
-        marker: mdastMarker,
+        marker: mdastCommentMarker,
         test: 'html',
         reset: true
       })
@@ -732,7 +738,7 @@ test('control()', function (t) {
       return function (tree, file) {
         file.message('Error')
         delete tree.children
-        control({name: 'foo', marker: mdastMarker})(tree, file)
+        messageControl({name: 'foo', marker: mdastCommentMarker})(tree, file)
       }
     })
     .process('', function (error, file) {
