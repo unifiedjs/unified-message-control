@@ -1,59 +1,148 @@
+/**
+ * @typedef {import('unist').Node} Node
+ * @typedef {import('unist').Parent} Parent
+ * @typedef {import('unist').Point} Point
+ * @typedef {import('unist-util-is').Test} Test
+ * @typedef {import('vfile').VFile} VFile
+ * @typedef {import('vfile-message').VFileMessage} VFileMessage
+ *
+ * @typedef {OptionsWithoutReset|OptionsWithReset} Options
+ * @typedef {OptionsBaseFields & OptionsWithoutResetFields} OptionsWithoutReset
+ * @typedef {OptionsBaseFields & OptionsWithResetFields} OptionsWithReset
+ *
+ * @typedef OptionsWithoutResetFields
+ * @property {false} [reset]
+ *   Whether to treat all messages as turned off initially.
+ * @property {string[]} [disable]
+ *   List of `ruleId`s to turn off.
+ *
+ * @typedef OptionsWithResetFields
+ * @property {true} reset
+ *   Whether to treat all messages as turned off initially.
+ * @property {string[]} [enable]
+ *   List of `ruleId`s to initially turn on.
+ *
+ * @typedef OptionsBaseFields
+ * @property {string} name
+ *   Name of markers that can control the message sources.
+ *
+ *   For example, `{name: 'alpha'}` controls `alpha` markers:
+ *
+ *   ```html
+ *   <!--alpha ignore-->
+ *   ```
+ * @property {MarkerParser} marker
+ *   Parse a possible marker to a comment marker object (Marker).
+ *   If the marker isn't a marker, should return `null`.
+ * @property {Test} [test]
+ *   Test for possible markers
+ * @property {string[]} [known]
+ *   List of allowed `ruleId`s. When given a warning is shown
+ *   when someone tries to control an unknown rule.
+ *
+ *   For example, `{name: 'alpha', known: ['bravo']}` results in a warning if
+ *   `charlie` is configured:
+ *
+ *   ```html
+ *   <!--alpha ignore charlie-->
+ *   ```
+ * @property {string|string[]} [source]
+ *   Sources that can be controlled with `name` markers.
+ *   Defaults to `name`.
+ *
+ * @callback MarkerParser
+ *   Parse a possible comment marker node to a Marker.
+ * @param {Node} node
+ *   Node to parse
+ *
+ * @typedef Marker
+ *   A comment marker.
+ * @property {string} name
+ *   Name of marker.
+ * @property {string} attributes
+ *   Value after name.
+ * @property {Record<string, string|number|boolean>} parameters
+ *   Parsed attributes.
+ * @property {Node} node
+ *   Reference to given node.
+ *
+ * @typedef Mark
+ * @property {Point|undefined} point
+ * @property {boolean} state
+ */
+
 import {location} from 'vfile-location'
 import {visit} from 'unist-util-visit'
 
 const own = {}.hasOwnProperty
 
+/**
+ * @param {Options} options
+ */
 export function messageControl(options) {
-  const settings = options || {}
-  const enable = settings.enable || []
-  const disable = settings.disable || []
-  let sources = settings.source
-  let reset = settings.reset
-
-  if (!settings.name) {
-    throw new Error('Expected `name` in `options`, got `' + settings.name + '`')
-  }
-
-  if (!settings.marker) {
+  if (!options || typeof options !== 'object' || !options.name) {
     throw new Error(
-      'Expected `marker` in `options`, got `' + settings.marker + '`'
+      'Expected `name` in `options`, got `' + (options || {}).name + '`'
     )
   }
 
-  if (!sources) {
-    sources = [settings.name]
-  } else if (typeof sources === 'string') {
-    sources = [sources]
+  if (!options.marker) {
+    throw new Error(
+      'Expected `marker` in `options`, got `' + options.marker + '`'
+    )
   }
+
+  const enable = 'enable' in options && options.enable ? options.enable : []
+  const disable = 'disable' in options && options.disable ? options.disable : []
+  let reset = options.reset
+  const sources =
+    typeof options.source === 'string'
+      ? [options.source]
+      : options.source || [options.name]
 
   return transformer
 
+  /**
+   * @param {Node} tree
+   * @param {VFile} file
+   */
   function transformer(tree, file) {
     const toOffset = location(file).toOffset
     const initial = !reset
     const gaps = detectGaps(tree, file)
+    /** @type {Record<string, Mark[]>} */
     const scope = {}
+    /** @type {Mark[]} */
     const globals = []
 
-    visit(tree, settings.test, visitor)
+    visit(tree, options.test, visitor)
 
     file.messages = file.messages.filter((m) => filter(m))
 
+    /**
+     * @param {Node} node
+     * @param {number|null} position
+     * @param {Parent|null} parent
+     */
     function visitor(node, position, parent) {
-      const mark = settings.marker(node)
+      /** @type {Marker|null} */
+      const mark = options.marker(node)
 
-      if (!mark || mark.name !== settings.name) {
+      if (!mark || mark.name !== options.name) {
         return
       }
 
       const ruleIds = mark.attributes.split(/\s/g)
-      const verb = ruleIds.shift()
-      const pos = mark.node.position && mark.node.position.start
-      const tail =
-        parent.children[position + 1] &&
-        parent.children[position + 1].position &&
-        parent.children[position + 1].position.end
+      const point = mark.node.position && mark.node.position.start
+      const next =
+        (parent && position !== null && parent.children[position + 1]) ||
+        undefined
+      const tail = (next && next.position && next.position.end) || undefined
       let index = -1
+
+      /** @type {string} */
+      // @ts-expect-error: we’ll check for unknown values next.
+      const verb = ruleIds.shift()
 
       if (verb !== 'enable' && verb !== 'disable' && verb !== 'ignore') {
         file.fail(
@@ -71,7 +160,7 @@ export function messageControl(options) {
           const ruleId = ruleIds[index]
 
           if (isKnown(ruleId, verb, mark.node)) {
-            toggle(pos, verb === 'enable', ruleId)
+            toggle(point, verb === 'enable', ruleId)
 
             if (verb === 'ignore') {
               toggle(tail, true, ruleId)
@@ -79,14 +168,18 @@ export function messageControl(options) {
           }
         }
       } else if (verb === 'ignore') {
-        toggle(pos, false)
+        toggle(point, false)
         toggle(tail, true)
       } else {
-        toggle(pos, verb === 'enable')
+        toggle(point, verb === 'enable')
         reset = verb !== 'enable'
       }
     }
 
+    /**
+     * @param {VFileMessage} message
+     * @returns {boolean}
+     */
     function filter(message) {
       let gapIndex = gaps.length
 
@@ -106,37 +199,51 @@ export function messageControl(options) {
       }
 
       // Check whether the warning is inside a gap.
-      const pos = toOffset(message)
+      // @ts-expect-error: we just normalized `null` to `number`s.
+      const offset = toOffset(message)
 
       while (gapIndex--) {
-        if (gaps[gapIndex].start <= pos && gaps[gapIndex].end > pos) {
+        if (gaps[gapIndex][0] <= offset && gaps[gapIndex][1] > offset) {
           return false
         }
       }
 
       // Check whether allowed by specific and global states.
       return (
-        check(message, scope[message.ruleId], message.ruleId) &&
+        (!message.ruleId ||
+          check(message, scope[message.ruleId], message.ruleId)) &&
         check(message, globals)
       )
     }
 
-    // Helper to check (and possibly warn) if a `ruleId` is unknown.
-    function isKnown(ruleId, verb, pos) {
-      const result = settings.known ? settings.known.includes(ruleId) : true
+    /**
+     * Helper to check (and possibly warn) if a `ruleId` is unknown.
+     *
+     * @param {string} ruleId
+     * @param {string} verb
+     * @param {Node} node
+     * @returns {boolean}
+     */
+    function isKnown(ruleId, verb, node) {
+      const result = options.known ? options.known.includes(ruleId) : true
 
       if (!result) {
         file.message(
           'Unknown rule: cannot ' + verb + " `'" + ruleId + "'`",
-          pos
+          node
         )
       }
 
       return result
     }
 
-    // Get the latest state of a rule.
-    // When without `ruleId`, gets global state.
+    /**
+     * Get the latest state of a rule.
+     * When without `ruleId`, gets global state.
+     *
+     * @param {string|undefined} ruleId
+     * @returns {boolean}
+     */
     function getState(ruleId) {
       const ranges = ruleId ? scope[ruleId] : globals
 
@@ -151,53 +258,73 @@ export function messageControl(options) {
       return reset ? enable.includes(ruleId) : !disable.includes(ruleId)
     }
 
-    // Handle a rule.
-    function toggle(pos, state, ruleId) {
+    /**
+     * Handle a rule.
+     *
+     * @param {Point|undefined} point
+     * @param {boolean} state
+     * @param {string|undefined} [ruleId]
+     * @returns {void}
+     */
+    function toggle(point, state, ruleId) {
       let markers = ruleId ? scope[ruleId] : globals
 
       if (!markers) {
         markers = []
-        scope[ruleId] = markers
+        scope[String(ruleId)] = markers
       }
 
       const previousState = getState(ruleId)
 
       if (state !== previousState) {
-        markers.push({state, position: pos})
+        markers.push({state, point})
       }
 
       // Toggle all known rules.
       if (!ruleId) {
         for (ruleId in scope) {
           if (own.call(scope, ruleId)) {
-            toggle(pos, state, ruleId)
+            toggle(point, state, ruleId)
           }
         }
       }
     }
 
-    // Check all `ranges` for `message`.
+    /**
+     * Check all `ranges` for `message`.
+     *
+     * @param {VFileMessage} message
+     * @param {Mark[]|undefined} ranges
+     * @param {string|undefined} [ruleId]
+     * @returns {boolean}
+     */
     function check(message, ranges, ruleId) {
-      // Check the state at the message’s position.
-      let index = ranges ? ranges.length : 0
+      if (ranges && ranges.length > 0) {
+        // Check the state at the message’s position.
+        let index = ranges.length
 
-      while (index--) {
-        if (
-          ranges[index].position &&
-          ranges[index].position.line &&
-          ranges[index].position.column &&
-          (ranges[index].position.line < message.line ||
-            (ranges[index].position.line === message.line &&
-              ranges[index].position.column <= message.column))
-        ) {
-          return ranges[index].state === true
+        while (index--) {
+          const range = ranges[index]
+
+          if (
+            message.line &&
+            message.column &&
+            range.point &&
+            range.point.line &&
+            range.point.column &&
+            (range.point.line < message.line ||
+              (range.point.line === message.line &&
+                range.point.column <= message.column))
+          ) {
+            return range.state === true
+          }
         }
       }
 
       // The first marker ocurred after the first message, so we check the
       // initial state.
       if (!ruleId) {
-        return initial || reset
+        return Boolean(initial || reset)
       }
 
       return reset ? enable.includes(ruleId) : !disable.includes(ruleId)
@@ -205,12 +332,21 @@ export function messageControl(options) {
   }
 }
 
-// Detect gaps in `tree`.
+/**
+ * Detect gaps in `tree`.
+ *
+ * @param {Node} tree
+ * @param {VFile} file
+ */
 function detectGaps(tree, file) {
+  /** @type {Node[]} */
+  // @ts-expect-error: fine.
   const children = tree.children || []
   const lastNode = children[children.length - 1]
+  /** @type {[number, number][]} */
   const gaps = []
   let offset = 0
+  /** @type {boolean|undefined} */
   let gap
 
   // Find all gaps.
@@ -230,28 +366,40 @@ function detectGaps(tree, file) {
     update()
 
     update(
-      tree && tree.position && tree.position.end && tree.position.end.offset - 1
+      tree &&
+        tree.position &&
+        tree.position.end &&
+        tree.position.end.offset &&
+        tree.position.end.offset - 1
     )
   }
 
   return gaps
 
+  /**
+   * @param {Node} node
+   */
   function one(node) {
     update(node.position && node.position.start && node.position.start.offset)
 
-    if (!node.children) {
+    if (!('children' in node)) {
       update(node.position && node.position.end && node.position.end.offset)
     }
   }
 
-  // Detect a new position.
+  /**
+   * Detect a new position.
+   *
+   * @param {number|undefined} [latest]
+   * @returns {void}
+   */
   function update(latest) {
     if (latest === null || latest === undefined) {
       gap = true
     } else if (offset < latest) {
       if (gap) {
-        gaps.push({start: offset, end: latest})
-        gap = null
+        gaps.push([offset, latest])
+        gap = undefined
       }
 
       offset = latest

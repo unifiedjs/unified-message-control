@@ -1,10 +1,16 @@
 {
+  "include": ["*.js"],
   "compilerOptions": {
-    "lib": ["es2015"],
-    "strict": true,
-    "baseUrl": ".",
-    "paths": {
-      "unified-message-control": ["."]
-    }
+    "target": "ES2020",
+    "lib": ["ES2020"],
+    "module": "ES2020",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "checkJs": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "strict": true
   }
 }
