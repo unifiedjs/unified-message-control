@@ -1,7 +1,7 @@
 import test from 'tape'
 import remark from 'remark'
 import remarkToc from 'remark-toc'
-import mdastCommentMarker from 'mdast-comment-marker'
+import {commentMarker} from 'mdast-comment-marker'
 import {messageControl} from './index.js'
 
 test('messageControl()', (t) => {
@@ -31,7 +31,7 @@ test('messageControl()', (t) => {
     .use(() => {
       const transformer = messageControl({
         name: 'foo',
-        marker: mdastCommentMarker,
+        marker: commentMarker,
         test: 'html'
       })
 
@@ -55,7 +55,7 @@ test('messageControl()', (t) => {
     .use(() => {
       const transformer = messageControl({
         name: 'foo',
-        marker: mdastCommentMarker,
+        marker: commentMarker,
         test: 'html'
       })
 
@@ -78,7 +78,7 @@ test('messageControl()', (t) => {
       const transformer = messageControl({
         name: 'foo',
         reset: true,
-        marker: mdastCommentMarker,
+        marker: commentMarker,
         test: 'html'
       })
 
@@ -111,7 +111,7 @@ test('messageControl()', (t) => {
       const transformer = messageControl({
         name: 'foo',
         reset: true,
-        marker: mdastCommentMarker,
+        marker: commentMarker,
         test: 'html'
       })
 
@@ -133,7 +133,7 @@ test('messageControl()', (t) => {
     .use(() => {
       const transformer = messageControl({
         name: 'foo',
-        marker: mdastCommentMarker,
+        marker: commentMarker,
         test: 'html'
       })
 
@@ -167,7 +167,7 @@ test('messageControl()', (t) => {
     .use(() => {
       const transformer = messageControl({
         name: 'foo',
-        marker: mdastCommentMarker,
+        marker: commentMarker,
         test: 'html'
       })
 
@@ -201,7 +201,7 @@ test('messageControl()', (t) => {
     .use(() => {
       const transformer = messageControl({
         name: 'foo',
-        marker: mdastCommentMarker,
+        marker: commentMarker,
         test: 'html'
       })
 
@@ -233,7 +233,7 @@ test('messageControl()', (t) => {
     .use(() => {
       const transformer = messageControl({
         name: 'foo',
-        marker: mdastCommentMarker,
+        marker: commentMarker,
         test: 'html'
       })
 
@@ -265,7 +265,7 @@ test('messageControl()', (t) => {
     .use(() => {
       const transformer = messageControl({
         name: 'foo',
-        marker: mdastCommentMarker,
+        marker: commentMarker,
         test: 'html'
       })
 
@@ -291,7 +291,7 @@ test('messageControl()', (t) => {
     .use(() => {
       return messageControl({
         name: 'foo',
-        marker: mdastCommentMarker,
+        marker: commentMarker,
         test: 'html'
       })
     })
@@ -309,7 +309,7 @@ test('messageControl()', (t) => {
     .use(() => {
       const transformer = messageControl({
         name: 'foo',
-        marker: mdastCommentMarker,
+        marker: commentMarker,
         test: 'html'
       })
 
@@ -343,7 +343,7 @@ test('messageControl()', (t) => {
     .use(() => {
       const transformer = messageControl({
         name: 'foo',
-        marker: mdastCommentMarker,
+        marker: commentMarker,
         test: 'html'
       })
 
@@ -378,7 +378,7 @@ test('messageControl()', (t) => {
     .use(() => {
       const transformer = messageControl({
         name: 'foo',
-        marker: mdastCommentMarker,
+        marker: commentMarker,
         test: 'html'
       })
 
@@ -400,7 +400,7 @@ test('messageControl()', (t) => {
     .use(() => {
       const transformer = messageControl({
         name: 'foo',
-        marker: mdastCommentMarker,
+        marker: commentMarker,
         test: 'html'
       })
 
@@ -422,7 +422,7 @@ test('messageControl()', (t) => {
     .use(() => {
       const transformer = messageControl({
         name: 'foo',
-        marker: mdastCommentMarker,
+        marker: commentMarker,
         test: 'html'
       })
 
@@ -444,7 +444,7 @@ test('messageControl()', (t) => {
     .use(() => {
       const transformer = messageControl({
         name: 'foo',
-        marker: mdastCommentMarker,
+        marker: commentMarker,
         test: 'html'
       })
 
@@ -478,7 +478,7 @@ test('messageControl()', (t) => {
     .use(() => {
       const transformer = messageControl({
         name: 'foo',
-        marker: mdastCommentMarker,
+        marker: commentMarker,
         test: 'html'
       })
 
@@ -500,7 +500,7 @@ test('messageControl()', (t) => {
     .use(() => {
       return messageControl({
         name: 'foo',
-        marker: mdastCommentMarker,
+        marker: commentMarker,
         test: 'html'
       })
     })
@@ -517,7 +517,7 @@ test('messageControl()', (t) => {
       return messageControl({
         name: 'foo',
         known: ['known'],
-        marker: mdastCommentMarker,
+        marker: commentMarker,
         test: 'html'
       })
     })
@@ -537,7 +537,7 @@ test('messageControl()', (t) => {
       const transformer = messageControl({
         name: 'foo',
         source: 'baz',
-        marker: mdastCommentMarker,
+        marker: commentMarker,
         test: 'html'
       })
 
@@ -560,7 +560,7 @@ test('messageControl()', (t) => {
       const transformer = messageControl({
         name: 'alpha',
         source: ['bravo', 'charlie'],
-        marker: mdastCommentMarker,
+        marker: commentMarker,
         test: 'html'
       })
 
@@ -595,7 +595,7 @@ test('messageControl()', (t) => {
       const transformer = messageControl({
         name: 'foo',
         disable: ['bar'],
-        marker: mdastCommentMarker,
+        marker: commentMarker,
         test: 'html'
       })
 
@@ -619,7 +619,7 @@ test('messageControl()', (t) => {
         name: 'foo',
         reset: true,
         enable: ['bar'],
-        marker: mdastCommentMarker,
+        marker: commentMarker,
         test: 'html'
       })
 
@@ -641,7 +641,7 @@ test('messageControl()', (t) => {
     .use(() => {
       const transformer = messageControl({
         name: 'foo',
-        marker: mdastCommentMarker,
+        marker: commentMarker,
         test: 'html'
       })
 
@@ -663,7 +663,7 @@ test('messageControl()', (t) => {
     .use(() => {
       const transformer = messageControl({
         name: 'foo',
-        marker: mdastCommentMarker,
+        marker: commentMarker,
         test: 'html',
         reset: true
       })
@@ -686,7 +686,7 @@ test('messageControl()', (t) => {
     .use(() => {
       const transformer = messageControl({
         name: 'foo',
-        marker: mdastCommentMarker,
+        marker: commentMarker,
         test: 'html'
       })
 
@@ -708,7 +708,7 @@ test('messageControl()', (t) => {
     .use(() => {
       const transformer = messageControl({
         name: 'foo',
-        marker: mdastCommentMarker,
+        marker: commentMarker,
         test: 'html',
         reset: true
       })
@@ -732,7 +732,7 @@ test('messageControl()', (t) => {
       return function (tree, file) {
         file.message('Error')
         delete tree.children
-        messageControl({name: 'foo', marker: mdastCommentMarker})(tree, file)
+        messageControl({name: 'foo', marker: commentMarker})(tree, file)
       }
     })
     .process('', (error, file) => {

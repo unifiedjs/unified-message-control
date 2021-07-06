@@ -1,5 +1,5 @@
-import location from 'vfile-location'
-import visit from 'unist-util-visit'
+import {location} from 'vfile-location'
+import {visit} from 'unist-util-visit'
 
 const own = {}.hasOwnProperty
 
