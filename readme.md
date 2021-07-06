@@ -34,17 +34,17 @@ Say we have the following file, `example.md`:
 And our script, `example.js`, looks as follows:
 
 ```js
-var vfile = require('to-vfile')
-var report = require('vfile-reporter')
-var remark = require('remark')
-var control = require('unified-message-control')
-var mdastMarker = require('mdast-comment-marker')
+import {toVFile} from 'to-vfile'
+import {reporter} from 'vfile-reporter'
+import {remark} from 'remark'
+import {messageControl} from 'unified-message-control'
+import {commentMarker} from 'mdast-comment-marker'
 
 remark()
   .use(warn)
-  .use(control, {name: 'foo', marker: mdastMarker, test: 'html'})
-  .process(vfile.readSync('example.md'), function (err, file) {
-    console.error(report(err || file))
+  .use(messageControl, {name: 'foo', marker: commentMarker, test: 'html'})
+  .process(toVFile.readSync('example.md'), function (err, file) {
+    console.error(reporter(err || file))
   })
 
 function warn() {
@@ -65,11 +65,11 @@ example.md: no issues found
 This package exports the following identifiers: `messageControl`.
 There is no default export.
 
-### `unified.use(control, options)`
+### `unified().use(messageControl, options)`
 
 Let comment markers control messages from certain sources.
 
-##### Options
+##### `options`
 
 ###### `options.name`
 
