@@ -36,22 +36,29 @@ And our script, `example.js`, looks as follows:
 ```js
 import {toVFile} from 'to-vfile'
 import {reporter} from 'vfile-reporter'
-import {remark} from 'remark'
-import {messageControl} from 'unified-message-control'
 import {commentMarker} from 'mdast-comment-marker'
+import {unified} from 'unified'
+import unifiedMessageControl from 'unified-message-control'
+import remarkParse from 'remark-parse'
+import remarkStringify from 'remark-stringify'
 
-remark()
-  .use(warn)
-  .use(messageControl, {name: 'foo', marker: commentMarker, test: 'html'})
-  .process(toVFile.readSync('example.md'), function (err, file) {
-    console.error(reporter(err || file))
-  })
-
-function warn() {
-  return function (tree, file) {
-    file.message('Whoops!', tree.children[1], 'foo:thing')
-  }
-}
+toVFile.read('example.md').then((file) => {
+  unified()
+    .use(remarkParse)
+    .use(remarkStringify)
+    .use(() => (tree, file) => {
+      file.message('Whoops!', tree.children[1], 'foo:thing')
+    })
+    .use(unifiedMessageControl, {
+      name: 'foo',
+      marker: commentMarker,
+      test: 'html'
+    })
+    .process(file)
+    .then((file) => {
+      console.error(reporter(file))
+    })
+})
 ```
 
 Now, running `node example` yields:
