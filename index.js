@@ -79,7 +79,7 @@ const own = {}.hasOwnProperty
 /**
  * @param {Options} options
  */
-export function messageControl(options) {
+export default function messageControl(options) {
   if (!options || typeof options !== 'object' || !options.name) {
     throw new Error(
       'Expected `name` in `options`, got `' + (options || {}).name + '`'

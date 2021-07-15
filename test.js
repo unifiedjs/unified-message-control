@@ -1,14 +1,10 @@
-/**
- * @typedef {import('unist').Node} Node
- */
-
 import test from 'tape'
 import {unified} from 'unified'
 import remarkParse from 'remark-parse'
 import remarkStringify from 'remark-stringify'
 import remarkToc from 'remark-toc'
 import {commentMarker} from 'mdast-comment-marker'
-import {messageControl} from './index.js'
+import messageControl from './index.js'
 
 const remark = unified().use(remarkParse).use(remarkStringify).freeze()
 
