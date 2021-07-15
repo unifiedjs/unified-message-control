@@ -51,7 +51,7 @@ test('messageControl()', (t) => {
       '<!--foo disable bar-->\n\nThis is a paragraph.',
       (error, file) => {
         t.deepEqual(
-          [error, ...file.messages],
+          [error, ...(file || {messages: []}).messages],
           [null],
           'should “disable” a message'
         )
@@ -75,7 +75,7 @@ test('messageControl()', (t) => {
     })
     .process('<!--foo disable-->\n\nThis is a paragraph.', (error, file) => {
       t.deepEqual(
-        [error, ...file.messages],
+        [error, ...(file || {messages: []}).messages],
         [null],
         'should “disable” all message without `ruleId`s'
       )
@@ -109,7 +109,7 @@ test('messageControl()', (t) => {
       ].join('\n'),
       (error, file) => {
         t.deepEqual(
-          [error, ...file.messages.map((m) => String(m))],
+          [error, ...(file || {messages: []}).messages.map((m) => String(m))],
           [null, '5:1-5:21: Error'],
           'should support `reset`'
         )
@@ -134,7 +134,7 @@ test('messageControl()', (t) => {
     })
     .process('<!--foo enable bar-->\n\nThis is a paragraph.', (error, file) => {
       t.deepEqual(
-        [error, ...file.messages.map((m) => String(m))],
+        [error, ...(file || {messages: []}).messages.map((m) => String(m))],
         [null, '3:1-3:21: Error'],
         'should enable with a marker, when `reset`'
       )
@@ -169,7 +169,7 @@ test('messageControl()', (t) => {
       ].join('\n'),
       (error, file) => {
         t.deepEqual(
-          [error, ...file.messages.map((m) => String(m))],
+          [error, ...(file || {messages: []}).messages.map((m) => String(m))],
           [null, '7:1-7:21: Error'],
           'should enable a message'
         )
@@ -205,7 +205,7 @@ test('messageControl()', (t) => {
       ].join('\n'),
       (error, file) => {
         t.deepEqual(
-          [error, ...file.messages.map((m) => String(m))],
+          [error, ...(file || {messages: []}).messages.map((m) => String(m))],
           [null, '7:1-7:21: Error'],
           'should enable all message without `ruleId`s'
         )
@@ -239,7 +239,7 @@ test('messageControl()', (t) => {
       ].join('\n'),
       (error, file) => {
         t.deepEqual(
-          [error, ...file.messages.map((m) => String(m))],
+          [error, ...(file || {messages: []}).messages.map((m) => String(m))],
           [null, '5:1-5:21: Error'],
           'should ignore a message'
         )
@@ -273,7 +273,7 @@ test('messageControl()', (t) => {
       ].join('\n'),
       (error, file) => {
         t.deepEqual(
-          [error, ...file.messages.map((m) => String(m))],
+          [error, ...(file || {messages: []}).messages.map((m) => String(m))],
           [null, '5:1-5:21: Error'],
           'should ignore all message without `ruleId`s'
         )
@@ -301,7 +301,7 @@ test('messageControl()', (t) => {
       '<!--foo ignore bar baz-->\n\nThis is a paragraph.',
       (error, file) => {
         t.deepEqual(
-          [error, ...file.messages.map((m) => String(m))],
+          [error, ...(file || {messages: []}).messages.map((m) => String(m))],
           [null],
           'should ignore multiple rules'
         )
@@ -353,7 +353,7 @@ test('messageControl()', (t) => {
       ].join('\n'),
       (error, file) => {
         t.deepEqual(
-          [error, ...file.messages.map((m) => String(m))],
+          [error, ...(file || {messages: []}).messages.map((m) => String(m))],
           [null, '7:1: Error'],
           'should ignore gaps'
         )
@@ -389,7 +389,7 @@ test('messageControl()', (t) => {
       ].join('\n'),
       (error, file) => {
         t.deepEqual(
-          [error, ...file.messages.map((m) => String(m))],
+          [error, ...(file || {messages: []}).messages.map((m) => String(m))],
           [null],
           'should ignore final gaps'
         )
@@ -412,7 +412,7 @@ test('messageControl()', (t) => {
     })
     .process('', (error, file) => {
       t.deepEqual(
-        [error, ...file.messages.map((m) => String(m))],
+        [error, ...(file || {messages: []}).messages.map((m) => String(m))],
         [null, '1:1: Error'],
         'should support empty documents'
       )
@@ -435,7 +435,7 @@ test('messageControl()', (t) => {
     })
     .process('# README\n', (error, file) => {
       t.deepEqual(
-        [error, ...file.messages.map((m) => String(m))],
+        [error, ...(file || {messages: []}).messages.map((m) => String(m))],
         [null, '2:1: Error'],
         'should message at the end of the document'
       )
@@ -458,7 +458,7 @@ test('messageControl()', (t) => {
     })
     .process('# README\n\n*   List', (error, file) => {
       t.deepEqual(
-        [error, ...file.messages.map((m) => String(m))],
+        [error, ...(file || {messages: []}).messages.map((m) => String(m))],
         [null, '3:9: Error'],
         'should message at the end of the document'
       )
@@ -493,7 +493,7 @@ test('messageControl()', (t) => {
       ].join('\n'),
       (error, file) => {
         t.deepEqual(
-          [error, ...file.messages.map((m) => String(m))],
+          [error, ...(file || {messages: []}).messages.map((m) => String(m))],
           [null],
           'should ignore double disables'
         )
@@ -516,7 +516,7 @@ test('messageControl()', (t) => {
     })
     .process('Foo', (error, file) => {
       t.deepEqual(
-        [error, ...file.messages.map((m) => String(m))],
+        [error, ...(file || {messages: []}).messages.map((m) => String(m))],
         [null, '1:1: Error'],
         'should not ignore messages without location information'
       )
@@ -532,7 +532,7 @@ test('messageControl()', (t) => {
     })
     .process('<!doctype html>\n\n<!--bar baz qux-->\n', (error, file) => {
       t.deepEqual(
-        [error, ...file.messages.map((m) => String(m))],
+        [error, ...(file || {messages: []}).messages.map((m) => String(m))],
         [null],
         'should ignore non-markers'
       )
@@ -551,7 +551,7 @@ test('messageControl()', (t) => {
       '<!--foo ignore known-->\n\n<!--foo ignore unknown-->',
       (error, file) => {
         t.deepEqual(
-          [error, ...file.messages.map((m) => String(m))],
+          [error, ...(file || {messages: []}).messages.map((m) => String(m))],
           [null, "3:1-3:26: Unknown rule: cannot ignore `'unknown'`"],
           'should support a list of `known` values, and warn on unknowns'
         )
@@ -576,7 +576,7 @@ test('messageControl()', (t) => {
     })
     .process('<!--foo ignore bar-->\n\nFoo', (error, file) => {
       t.deepEqual(
-        [error, ...file.messages.map((m) => String(m))],
+        [error, ...(file || {messages: []}).messages.map((m) => String(m))],
         [null],
         'should ignore by `source`, when given as a string'
       )
@@ -612,7 +612,7 @@ test('messageControl()', (t) => {
       ].join('\n'),
       (error, file) => {
         t.deepEqual(
-          [error, ...file.messages.map((m) => String(m))],
+          [error, ...(file || {messages: []}).messages.map((m) => String(m))],
           [null],
           'should ignore by `source`, when given as an array'
         )
@@ -637,7 +637,7 @@ test('messageControl()', (t) => {
     })
     .process('This is a paragraph.', (error, file) => {
       t.deepEqual(
-        [error, ...file.messages.map((m) => String(m))],
+        [error, ...(file || {messages: []}).messages.map((m) => String(m))],
         [null],
         'should support initial `disable`s'
       )
@@ -662,7 +662,7 @@ test('messageControl()', (t) => {
     })
     .process('This is a paragraph.', (error, file) => {
       t.deepEqual(
-        [error, ...file.messages.map((m) => String(m))],
+        [error, ...(file || {messages: []}).messages.map((m) => String(m))],
         [null, '1:1-1:21: Error'],
         'should support initial `enable`s'
       )
@@ -684,7 +684,7 @@ test('messageControl()', (t) => {
     })
     .process('<!--foo disable bar-->\n', (error, file) => {
       t.deepEqual(
-        [error, ...file.messages.map((m) => String(m))],
+        [error, ...(file || {messages: []}).messages.map((m) => String(m))],
         [null],
         'should disable messages at the start of a marker'
       )
@@ -707,7 +707,7 @@ test('messageControl()', (t) => {
     })
     .process('<!--foo enable-->\n', (error, file) => {
       t.deepEqual(
-        [error, ...file.messages.map((m) => String(m))],
+        [error, ...(file || {messages: []}).messages.map((m) => String(m))],
         [null, '1:1: Error'],
         'should enable messages at the start of a marker'
       )
@@ -729,7 +729,7 @@ test('messageControl()', (t) => {
     })
     .process('<!--foo disable bar-->\n', (error, file) => {
       t.deepEqual(
-        [error, ...file.messages.map((m) => String(m))],
+        [error, ...(file || {messages: []}).messages.map((m) => String(m))],
         [null],
         'should disable messages without positional info (at the start of a document)'
       )
@@ -752,7 +752,7 @@ test('messageControl()', (t) => {
     })
     .process('<!--foo enable-->\n', (error, file) => {
       t.deepEqual(
-        [error, ...file.messages.map((m) => String(m))],
+        [error, ...(file || {messages: []}).messages.map((m) => String(m))],
         [null, '1:1: Error'],
         'should enable messages without positional info (at the start of a document)'
       )
@@ -769,7 +769,7 @@ test('messageControl()', (t) => {
     })
     .process('', (error, file) => {
       t.deepEqual(
-        [error, ...file.messages.map((m) => String(m))],
+        [error, ...(file || {messages: []}).messages.map((m) => String(m))],
         [null, '1:1: Error'],
         'should not fail when there are messages but no `children` on `tree`'
       )

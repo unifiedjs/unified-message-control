@@ -77,7 +77,8 @@ import {visit} from 'unist-util-visit'
 const own = {}.hasOwnProperty
 
 /**
- * @param {Options} options
+ * @type {import('unified').Plugin<[Options]>}
+ * @returns {(tree: Node, file: VFile) => void}
  */
 export default function messageControl(options) {
   if (!options || typeof options !== 'object' || !options.name) {
