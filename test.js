@@ -309,13 +309,13 @@ test('messageControl()', (t) => {
     )
 
   remark()
-    .use(() => {
-      return messageControl({
+    .use(() =>
+      messageControl({
         name: 'foo',
         marker: commentMarker,
         test: 'html'
       })
-    })
+    )
     .process('<!--foo test-->', (error) => {
       t.equal(
         String(error),
@@ -523,13 +523,13 @@ test('messageControl()', (t) => {
     })
 
   remark()
-    .use(() => {
-      return messageControl({
+    .use(() =>
+      messageControl({
         name: 'foo',
         marker: commentMarker,
         test: 'html'
       })
-    })
+    )
     .process('<!doctype html>\n\n<!--bar baz qux-->\n', (error, file) => {
       t.deepEqual(
         [error, ...(file || {messages: []}).messages.map((m) => String(m))],
@@ -539,14 +539,14 @@ test('messageControl()', (t) => {
     })
 
   remark()
-    .use(() => {
-      return messageControl({
+    .use(() =>
+      messageControl({
         name: 'foo',
         known: ['known'],
         marker: commentMarker,
         test: 'html'
       })
-    })
+    )
     .process(
       '<!--foo ignore known-->\n\n<!--foo ignore unknown-->',
       (error, file) => {
@@ -759,14 +759,15 @@ test('messageControl()', (t) => {
     })
 
   remark()
-    .use(() => {
-      return function (tree, file) {
-        file.message('Error')
-        // @ts-expect-error: fine.
-        delete tree.children
-        messageControl({name: 'foo', marker: commentMarker})(tree, file)
-      }
-    })
+    .use(
+      () =>
+        function (tree, file) {
+          file.message('Error')
+          // @ts-expect-error: fine.
+          delete tree.children
+          messageControl({name: 'foo', marker: commentMarker})(tree, file)
+        }
+    )
     .process('', (error, file) => {
       t.deepEqual(
         [error, ...(file || {messages: []}).messages.map((m) => String(m))],
