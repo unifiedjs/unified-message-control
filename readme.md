@@ -90,7 +90,7 @@ For example, `{name: 'alpha'}` controls `alpha` markers:
 
 ###### `options.test`
 
-Test for possible markers (`Function`, `string`, `Object`, or `Array.<Test>`).
+Test for possible markers (`Function`, `string`, `Object`, or `Array<Test>`).
 See [`unist-util-is`][test].
 
 ###### `options.marker`
@@ -100,7 +100,7 @@ If the possible marker actually isn’t a marker, should return `null`.
 
 ###### `options.known`
 
-List of allowed `ruleId`s (`Array.<string>`, optional).
+List of allowed `ruleId`s (`Array<string>`, optional).
 When given, a warning is shown when someone tries to control an unknown rule.
 
 For example, `{name: 'alpha', known: ['bravo']}` results in a warning if
@@ -118,17 +118,17 @@ Whether to treat all messages as turned off initially (`boolean`, default:
 ###### `options.enable`
 
 List of `ruleId`s to initially turn on if `reset: true`
-(`Array.<string>`, optional).
+(`Array<string>`, optional).
 By default (`reset: false`), all rules are turned on.
 
 ###### `options.disable`
 
-List of `ruleId`s to turn on if `reset: false` (`Array.<string>`, optional).
+List of `ruleId`s to turn on if `reset: false` (`Array<string>`, optional).
 
 ###### `options.sources`
 
 Sources that can be controlled with `name` markers (`string` or
-`Array.<string>`, default: `options.name`)
+`Array<string>`, default: `options.name`)
 
 ### Markers
 

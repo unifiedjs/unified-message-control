@@ -13,13 +13,13 @@
  * @typedef OptionsWithoutResetFields
  * @property {false} [reset]
  *   Whether to treat all messages as turned off initially.
- * @property {string[]} [disable]
+ * @property {Array<string>} [disable]
  *   List of `ruleId`s to turn off.
  *
  * @typedef OptionsWithResetFields
  * @property {true} reset
  *   Whether to treat all messages as turned off initially.
- * @property {string[]} [enable]
+ * @property {Array<string>} [enable]
  *   List of `ruleId`s to initially turn on.
  *
  * @typedef OptionsBaseFields
@@ -36,7 +36,7 @@
  *   If the marker isn't a marker, should return `null`.
  * @property {Test} [test]
  *   Test for possible markers
- * @property {string[]} [known]
+ * @property {Array<string>} [known]
  *   List of allowed `ruleId`s. When given a warning is shown
  *   when someone tries to control an unknown rule.
  *
@@ -46,7 +46,7 @@
  *   ```html
  *   <!--alpha ignore charlie-->
  *   ```
- * @property {string|string[]} [source]
+ * @property {string|Array<string>} [source]
  *   Sources that can be controlled with `name` markers.
  *   Defaults to `name`.
  *
@@ -111,9 +111,9 @@ export default function messageControl(options) {
     const toOffset = location(file).toOffset
     const initial = !reset
     const gaps = detectGaps(tree, file)
-    /** @type {Record<string, Mark[]>} */
+    /** @type {Record<string, Array<Mark>>} */
     const scope = {}
-    /** @type {Mark[]} */
+    /** @type {Array<Mark>} */
     const globals = []
 
     visit(tree, options.test, visitor)
@@ -295,7 +295,7 @@ export default function messageControl(options) {
      * Check all `ranges` for `message`.
      *
      * @param {VFileMessage} message
-     * @param {Mark[]|undefined} ranges
+     * @param {Array<Mark>|undefined} ranges
      * @param {string|undefined} [ruleId]
      * @returns {boolean}
      */
@@ -340,11 +340,11 @@ export default function messageControl(options) {
  * @param {VFile} file
  */
 function detectGaps(tree, file) {
-  /** @type {Node[]} */
+  /** @type {Array<Node>} */
   // @ts-expect-error: fine.
   const children = tree.children || []
   const lastNode = children[children.length - 1]
-  /** @type {[number, number][]} */
+  /** @type {Array<[number, number]>} */
   const gaps = []
   let offset = 0
   /** @type {boolean|undefined} */
