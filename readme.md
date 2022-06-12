@@ -8,22 +8,59 @@
 [![Backers][backers-badge]][collective]
 [![Chat][chat-badge]][chat]
 
-Enable, disable, and ignore messages with [**unified**][unified].
+[unified][] utility to enable, disable, and ignore messages.
+
+## Contents
+
+*   [What is this?](#what-is-this)
+*   [When should I use this?](#when-should-i-use-this)
+*   [Install](#install)
+*   [Use](#use)
+*   [API](#api)
+    *   [`unified().use(messageControl, options)`](#unifiedusemessagecontrol-options)
+    *   [Markers](#markers)
+*   [Types](#types)
+*   [Compatibility](#compatibility)
+*   [Contribute](#contribute)
+*   [License](#license)
+
+## What is this?
+
+This is a lego block that is meant to be extended, such as is done by
+[`remark-message-control`][remark-message-control], so that lint messages can be
+controlled from content.
+
+## When should I use this?
+
+You can use this if you’re building an ecosystem like remark for some different
+content type, and want to let authors control messages from that content.
 
 ## Install
 
-This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c):
-Node 12+ is needed to use it and it must be `import`ed instead of `require`d.
-
-[npm][]:
+This package is [ESM only][esm].
+In Node.js (version 12.20+, 14.14+, 16.0+, or 18.0+), install with [npm][]:
 
 ```sh
 npm install unified-message-control
 ```
 
+In Deno with [`esm.sh`][esmsh]:
+
+```js
+import messageControl from 'https://esm.sh/unified-message-control@4'
+```
+
+In browsers with [`esm.sh`][esmsh]:
+
+```html
+<script type="module">
+  import messageControl from 'https://esm.sh/unified-message-control@4?bundle'
+</script>
+```
+
 ## Use
 
-Say we have the following file, `example.md`:
+Say our document `example.md` contains:
 
 ```markdown
 <!--foo ignore-->
@@ -31,37 +68,36 @@ Say we have the following file, `example.md`:
 ## Heading
 ```
 
-And our script, `example.js`, looks as follows:
+…and our module `example.js` looks as follows:
 
 ```js
-import {toVFile} from 'to-vfile'
+import {read} from 'to-vfile'
 import {reporter} from 'vfile-reporter'
 import {commentMarker} from 'mdast-comment-marker'
 import {unified} from 'unified'
-import unifiedMessageControl from 'unified-message-control'
+import messageControl from 'unified-message-control'
 import remarkParse from 'remark-parse'
 import remarkStringify from 'remark-stringify'
 
-toVFile.read('example.md').then((file) => {
-  unified()
-    .use(remarkParse)
-    .use(remarkStringify)
-    .use(() => (tree, file) => {
-      file.message('Whoops!', tree.children[1], 'foo:thing')
-    })
-    .use(unifiedMessageControl, {
-      name: 'foo',
-      marker: commentMarker,
-      test: 'html'
-    })
-    .process(file)
-    .then((file) => {
-      console.error(reporter(file))
-    })
-})
+const file = await read('example.md')
+
+await unified()
+  .use(remarkParse)
+  .use(remarkStringify)
+  .use(() => (tree, file) => {
+    file.message('Whoops!', tree.children[1], 'foo:thing')
+  })
+  .use(messageControl, {
+    name: 'foo',
+    marker: commentMarker,
+    test: 'html'
+  })
+  .process(file)
+
+console.error(reporter(file))
 ```
 
-Now, running `node example` yields:
+…now running `node example.js` yields:
 
 ```markdown
 example.md: no issues found
@@ -69,14 +105,16 @@ example.md: no issues found
 
 ## API
 
-This package exports the following identifiers: `messageControl`.
-There is no default export.
+This package exports no identifiers.
+The default export is `messageControl`.
 
 ### `unified().use(messageControl, options)`
 
 Let comment markers control messages from certain sources.
 
 ##### `options`
+
+Configuration.
 
 ###### `options.name`
 
@@ -179,6 +217,18 @@ For example, to turn off certain messages for the next node:
     * __bar__
 ```
 
+## Types
+
+This package is fully typed with [TypeScript][].
+It exports the additional types `Marker`, `MarkerParser`, and `Options`.
+
+## Compatibility
+
+Projects maintained by the unified collective are compatible with all maintained
+versions of Node.js.
+As of now, that is Node.js 12.20+, 14.14+, 16.0+, and 18.0+.
+Our projects sometimes work with older versions, but this is not guaranteed.
+
 ## Contribute
 
 See [`contributing.md`][contributing] in [`unifiedjs/.github`][health] for ways
@@ -223,13 +273,19 @@ abide by its terms.
 
 [npm]: https://docs.npmjs.com/cli/install
 
+[esm]: https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c
+
+[esmsh]: https://esm.sh
+
+[typescript]: https://www.typescriptlang.org
+
 [health]: https://github.com/unifiedjs/.github
 
-[contributing]: https://github.com/unifiedjs/.github/blob/HEAD/contributing.md
+[contributing]: https://github.com/unifiedjs/.github/blob/main/contributing.md
 
-[support]: https://github.com/unifiedjs/.github/blob/HEAD/support.md
+[support]: https://github.com/unifiedjs/.github/blob/main/support.md
 
-[coc]: https://github.com/unifiedjs/.github/blob/HEAD/code-of-conduct.md
+[coc]: https://github.com/unifiedjs/.github/blob/main/ncode-of-conduct.md
 
 [license]: license
 
@@ -240,3 +296,5 @@ abide by its terms.
 [unified]: https://github.com/unifiedjs/unified
 
 [test]: https://github.com/syntax-tree/unist-util-is#api
+
+[remark-message-control]: https://github.com/remarkjs/remark-message-control
