@@ -1,3 +1,7 @@
+/**
+ * @typedef {import('mdast').Root} Root
+ */
+
 import test from 'tape'
 import {unified} from 'unified'
 import remarkParse from 'remark-parse'
@@ -6,6 +10,8 @@ import remarkToc from 'remark-toc'
 import {commentMarker} from 'mdast-comment-marker'
 import messageControl from './index.js'
 
+/** @type {import('unified').Processor<Root, Root, Root, Root, 'string'>} */
+// @ts-expect-error: to do: remove when remark is released.
 const remark = unified().use(remarkParse).use(remarkStringify).freeze()
 
 test('messageControl()', (t) => {
@@ -34,67 +40,77 @@ test('messageControl()', (t) => {
   }, 'should *not* throw without test')
 
   remark()
-    .use(() => {
-      const transformer = messageControl({
-        name: 'foo',
-        marker: commentMarker,
-        test: 'html'
-      })
+    .use(
+      /** @type {import('unified').Plugin<[], Root>} */
+      () => {
+        const transformer = messageControl({
+          name: 'foo',
+          marker: commentMarker,
+          test: 'html'
+        })
 
-      return function (tree, file) {
-        file.message('Error', tree.children[1], 'foo:bar')
-        transformer(tree, file)
+        return function (tree, file) {
+          console.log(tree.type)
+          file.message('Error', tree.children[1], 'foo:bar')
+          transformer(tree, file)
+        }
       }
-    })
+    )
     .process(
       '<!--foo disable bar-->\n\nThis is a paragraph.',
       (error, file) => {
         t.deepEqual(
           [error, ...(file || {messages: []}).messages],
-          [null],
+          [undefined],
           'should “disable” a message'
         )
       }
     )
 
   remark()
-    .use(() => {
-      const transformer = messageControl({
-        name: 'foo',
-        marker: commentMarker,
-        test: 'html'
-      })
+    .use(
+      /** @type {import('unified').Plugin<[], Root>} */
+      () => {
+        const transformer = messageControl({
+          name: 'foo',
+          marker: commentMarker,
+          test: 'html'
+        })
 
-      return function (tree, file) {
-        file.message('Error', tree.children[1], 'foo:bar')
+        return function (tree, file) {
+          file.message('Error', tree.children[1], 'foo:bar')
 
-        transformer(tree, file)
+          transformer(tree, file)
+        }
       }
-    })
+    )
     .process('<!--foo disable-->\n\nThis is a paragraph.', (error, file) => {
       t.deepEqual(
         [error, ...(file || {messages: []}).messages],
-        [null],
+        [undefined],
         'should “disable” all message without `ruleId`s'
       )
     })
 
   remark()
-    .use(() => {
-      const transformer = messageControl({
-        name: 'foo',
-        reset: true,
-        marker: commentMarker,
-        test: 'html'
-      })
+    .use(
+      /** @type {import('unified').Plugin<[], Root>} */
+      () => {
+        const transformer = messageControl({
+          name: 'foo',
+          reset: true,
+          marker: commentMarker,
+          test: 'html'
+        })
 
-      return function (tree, file) {
-        file.message('Error', tree.children[0], 'foo:bar')
-        file.message('Error', tree.children[2], 'foo:bar')
+        return function (tree, file) {
+          file.message('Error', tree.children[0], 'foo:bar')
+          file.message('Error', tree.children[2], 'foo:bar')
 
-        transformer(tree, file)
+          transformer(tree, file)
+        }
       }
-    })
+    )
     .process(
       [
         'This is a paragraph.',
@@ -106,50 +122,56 @@ test('messageControl()', (t) => {
       (error, file) => {
         t.deepEqual(
           [error, ...(file || {messages: []}).messages.map(String)],
-          [null, '5:1-5:21: Error'],
+          [undefined, '5:1-5:21: Error'],
           'should support `reset`'
         )
       }
     )
 
   remark()
-    .use(() => {
-      const transformer = messageControl({
-        name: 'foo',
-        reset: true,
-        marker: commentMarker,
-        test: 'html'
-      })
+    .use(
+      /** @type {import('unified').Plugin<[], Root>} */
+      () => {
+        const transformer = messageControl({
+          name: 'foo',
+          reset: true,
+          marker: commentMarker,
+          test: 'html'
+        })
 
-      return function (tree, file) {
-        file.message('Error', tree.children[1], 'foo:bar')
+        return function (tree, file) {
+          file.message('Error', tree.children[1], 'foo:bar')
 
-        transformer(tree, file)
+          transformer(tree, file)
+        }
       }
-    })
+    )
     .process('<!--foo enable bar-->\n\nThis is a paragraph.', (error, file) => {
       t.deepEqual(
         [error, ...(file || {messages: []}).messages.map(String)],
-        [null, '3:1-3:21: Error'],
+        [undefined, '3:1-3:21: Error'],
         'should enable with a marker, when `reset`'
       )
     })
 
   remark()
-    .use(() => {
-      const transformer = messageControl({
-        name: 'foo',
-        marker: commentMarker,
-        test: 'html'
-      })
+    .use(
+      /** @type {import('unified').Plugin<[], Root>} */
+      () => {
+        const transformer = messageControl({
+          name: 'foo',
+          marker: commentMarker,
+          test: 'html'
+        })
 
-      return function (tree, file) {
-        file.message('Error', tree.children[1], 'foo:bar')
-        file.message('Error', tree.children[3], 'foo:bar')
+        return function (tree, file) {
+          file.message('Error', tree.children[1], 'foo:bar')
+          file.message('Error', tree.children[3], 'foo:bar')
 
-        transformer(tree, file)
+          transformer(tree, file)
+        }
       }
-    })
+    )
     .process(
       [
         '<!--foo disable bar-->',
@@ -163,27 +185,30 @@ test('messageControl()', (t) => {
       (error, file) => {
         t.deepEqual(
           [error, ...(file || {messages: []}).messages.map(String)],
-          [null, '7:1-7:21: Error'],
+          [undefined, '7:1-7:21: Error'],
           'should enable a message'
         )
       }
     )
 
   remark()
-    .use(() => {
-      const transformer = messageControl({
-        name: 'foo',
-        marker: commentMarker,
-        test: 'html'
-      })
+    .use(
+      /** @type {import('unified').Plugin<[], Root>} */
+      () => {
+        const transformer = messageControl({
+          name: 'foo',
+          marker: commentMarker,
+          test: 'html'
+        })
 
-      return function (tree, file) {
-        file.message('Error', tree.children[1], 'foo:bar')
-        file.message('Error', tree.children[3], 'foo:bar')
+        return function (tree, file) {
+          file.message('Error', tree.children[1], 'foo:bar')
+          file.message('Error', tree.children[3], 'foo:bar')
 
-        transformer(tree, file)
+          transformer(tree, file)
+        }
       }
-    })
+    )
     .process(
       [
         '<!--foo disable bar-->',
@@ -197,27 +222,30 @@ test('messageControl()', (t) => {
       (error, file) => {
         t.deepEqual(
           [error, ...(file || {messages: []}).messages.map(String)],
-          [null, '7:1-7:21: Error'],
+          [undefined, '7:1-7:21: Error'],
           'should enable all message without `ruleId`s'
         )
       }
     )
 
   remark()
-    .use(() => {
-      const transformer = messageControl({
-        name: 'foo',
-        marker: commentMarker,
-        test: 'html'
-      })
+    .use(
+      /** @type {import('unified').Plugin<[], Root>} */
+      () => {
+        const transformer = messageControl({
+          name: 'foo',
+          marker: commentMarker,
+          test: 'html'
+        })
 
-      return function (tree, file) {
-        file.message('Error', tree.children[1], 'foo:bar')
-        file.message('Error', tree.children[2], 'foo:bar')
+        return function (tree, file) {
+          file.message('Error', tree.children[1], 'foo:bar')
+          file.message('Error', tree.children[2], 'foo:bar')
 
-        transformer(tree, file)
+          transformer(tree, file)
+        }
       }
-    })
+    )
     .process(
       [
         '<!--foo ignore bar-->',
@@ -229,27 +257,30 @@ test('messageControl()', (t) => {
       (error, file) => {
         t.deepEqual(
           [error, ...(file || {messages: []}).messages.map(String)],
-          [null, '5:1-5:21: Error'],
+          [undefined, '5:1-5:21: Error'],
           'should ignore a message'
         )
       }
     )
 
   remark()
-    .use(() => {
-      const transformer = messageControl({
-        name: 'foo',
-        marker: commentMarker,
-        test: 'html'
-      })
+    .use(
+      /** @type {import('unified').Plugin<[], Root>} */
+      () => {
+        const transformer = messageControl({
+          name: 'foo',
+          marker: commentMarker,
+          test: 'html'
+        })
 
-      return function (tree, file) {
-        file.message('Error', tree.children[1], 'foo:bar')
-        file.message('Error', tree.children[2], 'foo:bar')
+        return function (tree, file) {
+          file.message('Error', tree.children[1], 'foo:bar')
+          file.message('Error', tree.children[2], 'foo:bar')
 
-        transformer(tree, file)
+          transformer(tree, file)
+        }
       }
-    })
+    )
     .process(
       [
         '<!--foo ignore-->',
@@ -261,45 +292,50 @@ test('messageControl()', (t) => {
       (error, file) => {
         t.deepEqual(
           [error, ...(file || {messages: []}).messages.map(String)],
-          [null, '5:1-5:21: Error'],
+          [undefined, '5:1-5:21: Error'],
           'should ignore all message without `ruleId`s'
         )
       }
     )
 
   remark()
-    .use(() => {
-      const transformer = messageControl({
-        name: 'foo',
-        marker: commentMarker,
-        test: 'html'
-      })
+    .use(
+      /** @type {import('unified').Plugin<[], Root>} */
+      () => {
+        const transformer = messageControl({
+          name: 'foo',
+          marker: commentMarker,
+          test: 'html'
+        })
 
-      return function (tree, file) {
-        file.message('Error', tree.children[1], 'foo:bar')
-        file.message('Error', tree.children[1], 'foo:baz')
+        return function (tree, file) {
+          file.message('Error', tree.children[1], 'foo:bar')
+          file.message('Error', tree.children[1], 'foo:baz')
 
-        transformer(tree, file)
+          transformer(tree, file)
+        }
       }
-    })
+    )
     .process(
       '<!--foo ignore bar baz-->\n\nThis is a paragraph.',
       (error, file) => {
         t.deepEqual(
           [error, ...(file || {messages: []}).messages.map(String)],
-          [null],
+          [undefined],
           'should ignore multiple rules'
         )
       }
     )
 
   remark()
-    .use(() =>
-      messageControl({
-        name: 'foo',
-        marker: commentMarker,
-        test: 'html'
-      })
+    .use(
+      /** @type {import('unified').Plugin<[], Root>} */
+      () =>
+        messageControl({
+          name: 'foo',
+          marker: commentMarker,
+          test: 'html'
+        })
     )
     .process('<!--foo test-->', (error) => {
       t.equal(
@@ -311,21 +347,25 @@ test('messageControl()', (t) => {
     })
 
   remark()
+    // @ts-expect-error: to do: remove when `remark-toc` is released.
     .use(remarkToc)
-    .use(() => {
-      const transformer = messageControl({
-        name: 'foo',
-        marker: commentMarker,
-        test: 'html'
-      })
+    .use(
+      /** @type {import('unified').Plugin<[], Root>} */
+      () => {
+        const transformer = messageControl({
+          name: 'foo',
+          marker: commentMarker,
+          test: 'html'
+        })
 
-      return function (tree, file) {
-        file.message('Error', {line: 5, column: 1}, 'foo:bar')
-        file.message('Error', {line: 7, column: 1}, 'foo:bar')
+        return function (tree, file) {
+          file.message('Error', {line: 5, column: 1}, 'foo:bar')
+          file.message('Error', {line: 7, column: 1}, 'foo:bar')
 
-        transformer(tree, file)
+          transformer(tree, file)
+        }
       }
-    })
+    )
     .process(
       [
         '# README',
@@ -339,30 +379,33 @@ test('messageControl()', (t) => {
       (error, file) => {
         t.deepEqual(
           [error, ...(file || {messages: []}).messages.map(String)],
-          [null, '7:1: Error'],
+          [undefined, '7:1: Error'],
           'should ignore gaps'
         )
       }
     )
 
   remark()
-    .use(() => {
-      const transformer = messageControl({
-        name: 'foo',
-        marker: commentMarker,
-        test: 'html'
-      })
+    .use(
+      /** @type {import('unified').Plugin<[], Root>} */
+      () => {
+        const transformer = messageControl({
+          name: 'foo',
+          marker: commentMarker,
+          test: 'html'
+        })
 
-      return function (tree, file) {
-        file.message('Error', {line: 5, column: 1}, 'foo:bar')
-        file.message('Error', {line: 5, column: 1}, 'foo:bar')
+        return function (tree, file) {
+          file.message('Error', {line: 5, column: 1}, 'foo:bar')
+          file.message('Error', {line: 5, column: 1}, 'foo:bar')
 
-        // Remove list.
-        tree.children.pop()
+          // Remove list.
+          tree.children.pop()
 
-        transformer(tree, file)
+          transformer(tree, file)
+        }
       }
-    })
+    )
     .process(
       [
         '# README',
@@ -374,95 +417,107 @@ test('messageControl()', (t) => {
       (error, file) => {
         t.deepEqual(
           [error, ...(file || {messages: []}).messages.map(String)],
-          [null],
+          [undefined],
           'should ignore final gaps'
         )
       }
     )
 
   remark()
-    .use(() => {
-      const transformer = messageControl({
-        name: 'foo',
-        marker: commentMarker,
-        test: 'html'
-      })
+    .use(
+      /** @type {import('unified').Plugin<[], Root>} */
+      () => {
+        const transformer = messageControl({
+          name: 'foo',
+          marker: commentMarker,
+          test: 'html'
+        })
 
-      return function (tree, file) {
-        file.message('Error', undefined, 'foo:bar')
+        return function (tree, file) {
+          file.message('Error', undefined, 'foo:bar')
 
-        transformer(tree, file)
+          transformer(tree, file)
+        }
       }
-    })
+    )
     .process('', (error, file) => {
       t.deepEqual(
         [error, ...(file || {messages: []}).messages.map(String)],
-        [null, '1:1: Error'],
+        [undefined, '1:1: Error'],
         'should support empty documents'
       )
     })
 
   remark()
-    .use(() => {
-      const transformer = messageControl({
-        name: 'foo',
-        marker: commentMarker,
-        test: 'html'
-      })
+    .use(
+      /** @type {import('unified').Plugin<[], Root>} */
+      () => {
+        const transformer = messageControl({
+          name: 'foo',
+          marker: commentMarker,
+          test: 'html'
+        })
 
-      return function (tree, file) {
-        // @ts-expect-error: fine.
-        file.message('Error', tree.position.end, 'foo:bar')
+        return function (tree, file) {
+          // @ts-expect-error: fine.
+          file.message('Error', tree.position.end, 'foo:bar')
 
-        transformer(tree, file)
+          transformer(tree, file)
+        }
       }
-    })
+    )
     .process('# README\n', (error, file) => {
       t.deepEqual(
         [error, ...(file || {messages: []}).messages.map(String)],
-        [null, '2:1: Error'],
+        [undefined, '2:1: Error'],
         'should message at the end of the document'
       )
     })
 
   remark()
-    .use(() => {
-      const transformer = messageControl({
-        name: 'foo',
-        marker: commentMarker,
-        test: 'html'
-      })
+    .use(
+      /** @type {import('unified').Plugin<[], Root>} */
+      () => {
+        const transformer = messageControl({
+          name: 'foo',
+          marker: commentMarker,
+          test: 'html'
+        })
 
-      return function (tree, file) {
-        // @ts-expect-error: fine.
-        file.message('Error', tree.children[1].position.end, 'foo:bar')
+        return function (tree, file) {
+          // @ts-expect-error: fine.
+          file.message('Error', tree.children[1].position.end, 'foo:bar')
 
-        transformer(tree, file)
+          transformer(tree, file)
+        }
       }
-    })
+    )
     .process('# README\n\n*   List', (error, file) => {
       t.deepEqual(
         [error, ...(file || {messages: []}).messages.map(String)],
-        [null, '3:9: Error'],
+        [undefined, '3:9: Error'],
         'should message at the end of the document'
       )
     })
 
   remark()
-    .use(() => {
-      const transformer = messageControl({
-        name: 'foo',
-        marker: commentMarker,
-        test: 'html'
-      })
+    .use(
+      /** @type {import('unified').Plugin<[], Root>} */
+      () => {
+        const transformer = messageControl({
+          name: 'foo',
+          marker: commentMarker,
+          test: 'html'
+        })
 
-      return function (tree, file) {
-        file.message('Error', tree.children[1], 'foo:bar')
-        file.message('Error', tree.children[3], 'foo:bar')
+        return function (tree, file) {
+          file.message('Error', tree.children[1], 'foo:bar')
+          file.message('Error', tree.children[3], 'foo:bar')
 
-        transformer(tree, file)
+          transformer(tree, file)
+        }
       }
-    })
+    )
     .process(
       [
         '<!--foo disable bar-->',
@@ -476,109 +531,122 @@ test('messageControl()', (t) => {
       (error, file) => {
         t.deepEqual(
           [error, ...(file || {messages: []}).messages.map(String)],
-          [null],
+          [undefined],
           'should ignore double disables'
         )
       }
     )
 
   remark()
-    .use(() => {
-      const transformer = messageControl({
-        name: 'foo',
-        marker: commentMarker,
-        test: 'html'
-      })
+    .use(
+      /** @type {import('unified').Plugin<[], Root>} */
+      () => {
+        const transformer = messageControl({
+          name: 'foo',
+          marker: commentMarker,
+          test: 'html'
+        })
 
-      return function (tree, file) {
-        file.message('Error', undefined, 'foo:bar')
+        return function (tree, file) {
+          file.message('Error', undefined, 'foo:bar')
 
-        transformer(tree, file)
+          transformer(tree, file)
+        }
       }
-    })
+    )
     .process('Foo', (error, file) => {
       t.deepEqual(
         [error, ...(file || {messages: []}).messages.map(String)],
-        [null, '1:1: Error'],
+        [undefined, '1:1: Error'],
         'should not ignore messages without location information'
       )
     })
 
   remark()
-    .use(() =>
-      messageControl({
-        name: 'foo',
-        marker: commentMarker,
-        test: 'html'
-      })
+    .use(
+      /** @type {import('unified').Plugin<[], Root>} */
+      () =>
+        messageControl({
+          name: 'foo',
+          marker: commentMarker,
+          test: 'html'
+        })
     )
     .process('<!doctype html>\n\n<!--bar baz qux-->\n', (error, file) => {
       t.deepEqual(
         [error, ...(file || {messages: []}).messages.map(String)],
-        [null],
+        [undefined],
         'should ignore non-markers'
       )
     })
 
   remark()
-    .use(() =>
-      messageControl({
-        name: 'foo',
-        known: ['known'],
-        marker: commentMarker,
-        test: 'html'
-      })
+    .use(
+      /** @type {import('unified').Plugin<[], Root>} */
+      () =>
+        messageControl({
+          name: 'foo',
+          known: ['known'],
+          marker: commentMarker,
+          test: 'html'
+        })
     )
     .process(
       '<!--foo ignore known-->\n\n<!--foo ignore unknown-->',
       (error, file) => {
         t.deepEqual(
           [error, ...(file || {messages: []}).messages.map(String)],
-          [null, "3:1-3:26: Unknown rule: cannot ignore `'unknown'`"],
+          [undefined, "3:1-3:26: Unknown rule: cannot ignore `'unknown'`"],
           'should support a list of `known` values, and warn on unknowns'
         )
       }
     )
 
   remark()
-    .use(() => {
-      const transformer = messageControl({
-        name: 'foo',
-        source: 'baz',
-        marker: commentMarker,
-        test: 'html'
-      })
+    .use(
+      /** @type {import('unified').Plugin<[], Root>} */
+      () => {
+        const transformer = messageControl({
+          name: 'foo',
+          source: 'baz',
+          marker: commentMarker,
+          test: 'html'
+        })
 
-      return function (tree, file) {
-        file.message('Error', tree.children[1], 'baz:bar')
+        return function (tree, file) {
+          file.message('Error', tree.children[1], 'baz:bar')
 
-        transformer(tree, file)
+          transformer(tree, file)
+        }
       }
-    })
+    )
     .process('<!--foo ignore bar-->\n\nFoo', (error, file) => {
       t.deepEqual(
         [error, ...(file || {messages: []}).messages.map(String)],
-        [null],
+        [undefined],
         'should ignore by `source`, when given as a string'
       )
     })
 
   remark()
-    .use(() => {
-      const transformer = messageControl({
-        name: 'alpha',
-        source: ['bravo', 'charlie'],
-        marker: commentMarker,
-        test: 'html'
-      })
+    .use(
+      /** @type {import('unified').Plugin<[], Root>} */
+      () => {
+        const transformer = messageControl({
+          name: 'alpha',
+          source: ['bravo', 'charlie'],
+          marker: commentMarker,
+          test: 'html'
+        })
 
-      return function (tree, file) {
-        file.message('Error', tree.children[1], 'bravo:delta')
-        file.message('Error', tree.children[3], 'charlie:echo')
+        return function (tree, file) {
+          file.message('Error', tree.children[1], 'bravo:delta')
+          file.message('Error', tree.children[3], 'charlie:echo')
 
-        transformer(tree, file)
+          transformer(tree, file)
+        }
       }
-    })
+    )
     .process(
       [
         '<!--alpha ignore delta-->',
@@ -592,163 +660,183 @@ test('messageControl()', (t) => {
       (error, file) => {
         t.deepEqual(
           [error, ...(file || {messages: []}).messages.map(String)],
-          [null],
+          [undefined],
           'should ignore by `source`, when given as an array'
         )
       }
     )
 
   remark()
-    .use(() => {
-      const transformer = messageControl({
-        name: 'foo',
-        disable: ['bar'],
-        marker: commentMarker,
-        test: 'html'
-      })
+    .use(
+      /** @type {import('unified').Plugin<[], Root>} */
+      () => {
+        const transformer = messageControl({
+          name: 'foo',
+          disable: ['bar'],
+          marker: commentMarker,
+          test: 'html'
+        })
 
-      return function (tree, file) {
-        file.message('Error', tree.children[0], 'foo:bar')
+        return function (tree, file) {
+          file.message('Error', tree.children[0], 'foo:bar')
 
-        transformer(tree, file)
+          transformer(tree, file)
+        }
       }
-    })
+    )
     .process('This is a paragraph.', (error, file) => {
       t.deepEqual(
         [error, ...(file || {messages: []}).messages.map(String)],
-        [null],
+        [undefined],
         'should support initial `disable`s'
       )
     })
 
   remark()
-    .use(() => {
-      const transformer = messageControl({
-        name: 'foo',
-        reset: true,
-        enable: ['bar'],
-        marker: commentMarker,
-        test: 'html'
-      })
+    .use(
+      /** @type {import('unified').Plugin<[], Root>} */
+      () => {
+        const transformer = messageControl({
+          name: 'foo',
+          reset: true,
+          enable: ['bar'],
+          marker: commentMarker,
+          test: 'html'
+        })
 
-      return function (tree, file) {
-        file.message('Error', tree.children[0], 'foo:bar')
+        return function (tree, file) {
+          file.message('Error', tree.children[0], 'foo:bar')
 
-        transformer(tree, file)
+          transformer(tree, file)
+        }
       }
-    })
+    )
     .process('This is a paragraph.', (error, file) => {
       t.deepEqual(
         [error, ...(file || {messages: []}).messages.map(String)],
-        [null, '1:1-1:21: Error'],
+        [undefined, '1:1-1:21: Error'],
         'should support initial `enable`s'
       )
     })
 
   remark()
-    .use(() => {
-      const transformer = messageControl({
-        name: 'foo',
-        marker: commentMarker,
-        test: 'html'
-      })
+    .use(
+      /** @type {import('unified').Plugin<[], Root>} */
+      () => {
+        const transformer = messageControl({
+          name: 'foo',
+          marker: commentMarker,
+          test: 'html'
+        })
 
-      return function (tree, file) {
-        file.message('Error', {line: 1, column: 1}, 'foo:bar')
+        return function (tree, file) {
+          file.message('Error', {line: 1, column: 1}, 'foo:bar')
 
-        transformer(tree, file)
+          transformer(tree, file)
+        }
       }
-    })
+    )
     .process('<!--foo disable bar-->\n', (error, file) => {
       t.deepEqual(
         [error, ...(file || {messages: []}).messages.map(String)],
-        [null],
+        [undefined],
         'should disable messages at the start of a marker'
       )
     })
 
   remark()
-    .use(() => {
-      const transformer = messageControl({
-        name: 'foo',
-        marker: commentMarker,
-        test: 'html',
-        reset: true
-      })
+    .use(
+      /** @type {import('unified').Plugin<[], Root>} */
+      () => {
+        const transformer = messageControl({
+          name: 'foo',
+          marker: commentMarker,
+          test: 'html',
+          reset: true
+        })
 
-      return function (tree, file) {
-        file.message('Error', {line: 1, column: 1}, 'foo:bar')
+        return function (tree, file) {
+          file.message('Error', {line: 1, column: 1}, 'foo:bar')
 
-        transformer(tree, file)
+          transformer(tree, file)
+        }
       }
-    })
+    )
     .process('<!--foo enable-->\n', (error, file) => {
       t.deepEqual(
         [error, ...(file || {messages: []}).messages.map(String)],
-        [null, '1:1: Error'],
+        [undefined, '1:1: Error'],
         'should enable messages at the start of a marker'
       )
     })
 
   remark()
-    .use(() => {
-      const transformer = messageControl({
-        name: 'foo',
-        marker: commentMarker,
-        test: 'html'
-      })
+    .use(
+      /** @type {import('unified').Plugin<[], Root>} */
+      () => {
+        const transformer = messageControl({
+          name: 'foo',
+          marker: commentMarker,
+          test: 'html'
+        })
 
-      return function (tree, file) {
-        file.message('Error', undefined, 'foo:bar')
+        return function (tree, file) {
+          file.message('Error', undefined, 'foo:bar')
 
-        transformer(tree, file)
+          transformer(tree, file)
+        }
       }
-    })
+    )
     .process('<!--foo disable bar-->\n', (error, file) => {
       t.deepEqual(
         [error, ...(file || {messages: []}).messages.map(String)],
-        [null],
+        [undefined],
         'should disable messages without positional info (at the start of a document)'
       )
     })
 
   remark()
-    .use(() => {
-      const transformer = messageControl({
-        name: 'foo',
-        marker: commentMarker,
-        test: 'html',
-        reset: true
-      })
+    .use(
+      /** @type {import('unified').Plugin<[], Root>} */
+      () => {
+        const transformer = messageControl({
+          name: 'foo',
+          marker: commentMarker,
+          test: 'html',
+          reset: true
+        })
 
-      return function (tree, file) {
-        file.message('Error', undefined, 'foo:bar')
+        return function (tree, file) {
+          file.message('Error', undefined, 'foo:bar')
 
-        transformer(tree, file)
+          transformer(tree, file)
+        }
       }
-    })
+    )
     .process('<!--foo enable-->\n', (error, file) => {
       t.deepEqual(
         [error, ...(file || {messages: []}).messages.map(String)],
-        [null, '1:1: Error'],
+        [undefined, '1:1: Error'],
         'should enable messages without positional info (at the start of a document)'
       )
     })
 
   remark()
     .use(
+      /** @type {import('unified').Plugin<[], Root>} */
       () =>
         function (tree, file) {
           file.message('Error')
-          // @ts-expect-error: fine.
-          delete tree.children
+          // To do: needed for coverage?
+          // @-ts-expect-error: fine.
+          // delete tree.children
           messageControl({name: 'foo', marker: commentMarker})(tree, file)
         }
     )
     .process('', (error, file) => {
       t.deepEqual(
         [error, ...(file || {messages: []}).messages.map(String)],
-        [null, '1:1: Error'],
+        [undefined, '1:1: Error'],
         'should not fail when there are messages but no `children` on `tree`'
       )
     })

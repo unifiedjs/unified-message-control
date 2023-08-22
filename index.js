@@ -77,8 +77,8 @@ import {visit} from 'unist-util-visit'
 const own = {}.hasOwnProperty
 
 /**
- * @type {import('unified').Plugin<[Options]>}
- * @returns {(tree: Node, file: VFile) => void}
+ * @param {Options} options
+ * @returns {(tree: Node, file: VFile) => undefined}
  */
 export default function messageControl(options) {
   if (!options || typeof options !== 'object' || !options.name) {
@@ -106,6 +106,7 @@ export default function messageControl(options) {
   /**
    * @param {Node} tree
    * @param {VFile} file
+   * @returns {undefined}
    */
   function transformer(tree, file) {
     const toOffset = location(file).toOffset
@@ -122,8 +123,8 @@ export default function messageControl(options) {
 
     /**
      * @param {Node} node
-     * @param {number|null} position
-     * @param {Parent|null} parent
+     * @param {number|undefined} position
+     * @param {Parent|undefined} parent
      */
     function visitor(node, position, parent) {
       /** @type {Marker|null} */
@@ -136,7 +137,7 @@ export default function messageControl(options) {
       const ruleIds = mark.attributes.split(/\s/g)
       const point = mark.node.position && mark.node.position.start
       const next =
-        (parent && position !== null && parent.children[position + 1]) ||
+        (parent && position !== undefined && parent.children[position + 1]) ||
         undefined
       const tail = (next && next.position && next.position.end) || undefined
       let index = -1
@@ -200,8 +201,10 @@ export default function messageControl(options) {
       }
 
       // Check whether the warning is inside a gap.
-      // @ts-expect-error: we just normalized `null` to `number`s.
       const offset = toOffset(message)
+
+      // To do: check.
+      if (offset === undefined) return false
 
       while (gapIndex--) {
         if (gaps[gapIndex][0] <= offset && gaps[gapIndex][1] > offset) {
