@@ -2,7 +2,8 @@
  * @typedef {import('mdast').Root} Root
  */
 
-import test from 'tape'
+import assert from 'node:assert/strict'
+import test from 'node:test'
 import {unified} from 'unified'
 import remarkParse from 'remark-parse'
 import remarkStringify from 'remark-stringify'
@@ -14,8 +15,8 @@ import messageControl from './index.js'
 // @ts-expect-error: to do: remove when remark is released.
 const remark = unified().use(remarkParse).use(remarkStringify).freeze()
 
-test('messageControl()', (t) => {
-  t.throws(
+test('messageControl()', () => {
+  assert.throws(
     () => {
       // @ts-expect-error: runtime.
       remark().use(messageControl).freeze()
@@ -24,7 +25,7 @@ test('messageControl()', (t) => {
     'should throw without `name`'
   )
 
-  t.throws(
+  assert.throws(
     () => {
       // @ts-expect-error: runtime.
       remark().use(messageControl, {name: 'foo'}).freeze()
@@ -33,7 +34,7 @@ test('messageControl()', (t) => {
     'should throw without marker'
   )
 
-  t.doesNotThrow(() => {
+  assert.doesNotThrow(() => {
     remark()
       .use(messageControl, {name: 'foo', marker() {}})
       .freeze()
@@ -50,7 +51,6 @@ test('messageControl()', (t) => {
         })
 
         return function (tree, file) {
-          console.log(tree.type)
           file.message('Error', tree.children[1], 'foo:bar')
           transformer(tree, file)
         }
@@ -59,7 +59,7 @@ test('messageControl()', (t) => {
     .process(
       '<!--foo disable bar-->\n\nThis is a paragraph.',
       (error, file) => {
-        t.deepEqual(
+        assert.deepEqual(
           [error, ...(file || {messages: []}).messages],
           [undefined],
           'should “disable” a message'
@@ -85,7 +85,7 @@ test('messageControl()', (t) => {
       }
     )
     .process('<!--foo disable-->\n\nThis is a paragraph.', (error, file) => {
-      t.deepEqual(
+      assert.deepEqual(
         [error, ...(file || {messages: []}).messages],
         [undefined],
         'should “disable” all message without `ruleId`s'
@@ -120,7 +120,7 @@ test('messageControl()', (t) => {
         'This is a paragraph.'
       ].join('\n'),
       (error, file) => {
-        t.deepEqual(
+        assert.deepEqual(
           [error, ...(file || {messages: []}).messages.map(String)],
           [undefined, '5:1-5:21: Error'],
           'should support `reset`'
@@ -147,7 +147,7 @@ test('messageControl()', (t) => {
       }
     )
     .process('<!--foo enable bar-->\n\nThis is a paragraph.', (error, file) => {
-      t.deepEqual(
+      assert.deepEqual(
         [error, ...(file || {messages: []}).messages.map(String)],
         [undefined, '3:1-3:21: Error'],
         'should enable with a marker, when `reset`'
@@ -183,7 +183,7 @@ test('messageControl()', (t) => {
         'This is a paragraph.'
       ].join('\n'),
       (error, file) => {
-        t.deepEqual(
+        assert.deepEqual(
           [error, ...(file || {messages: []}).messages.map(String)],
           [undefined, '7:1-7:21: Error'],
           'should enable a message'
@@ -220,7 +220,7 @@ test('messageControl()', (t) => {
         'This is a paragraph.'
       ].join('\n'),
       (error, file) => {
-        t.deepEqual(
+        assert.deepEqual(
           [error, ...(file || {messages: []}).messages.map(String)],
           [undefined, '7:1-7:21: Error'],
           'should enable all message without `ruleId`s'
@@ -255,7 +255,7 @@ test('messageControl()', (t) => {
         'This is a paragraph.'
       ].join('\n'),
       (error, file) => {
-        t.deepEqual(
+        assert.deepEqual(
           [error, ...(file || {messages: []}).messages.map(String)],
           [undefined, '5:1-5:21: Error'],
           'should ignore a message'
@@ -290,7 +290,7 @@ test('messageControl()', (t) => {
         'This is a paragraph.'
       ].join('\n'),
       (error, file) => {
-        t.deepEqual(
+        assert.deepEqual(
           [error, ...(file || {messages: []}).messages.map(String)],
           [undefined, '5:1-5:21: Error'],
           'should ignore all message without `ruleId`s'
@@ -319,7 +319,7 @@ test('messageControl()', (t) => {
     .process(
       '<!--foo ignore bar baz-->\n\nThis is a paragraph.',
       (error, file) => {
-        t.deepEqual(
+        assert.deepEqual(
           [error, ...(file || {messages: []}).messages.map(String)],
           [undefined],
           'should ignore multiple rules'
@@ -338,7 +338,7 @@ test('messageControl()', (t) => {
         })
     )
     .process('<!--foo test-->', (error) => {
-      t.equal(
+      assert.equal(
         String(error),
         '1:1-1:16: Unknown keyword `test`: ' +
           "expected `'enable'`, `'disable'`, or `'ignore'`",
@@ -377,7 +377,7 @@ test('messageControl()', (t) => {
         '## Another header'
       ].join('\n'),
       (error, file) => {
-        t.deepEqual(
+        assert.deepEqual(
           [error, ...(file || {messages: []}).messages.map(String)],
           [undefined, '7:1: Error'],
           'should ignore gaps'
@@ -415,7 +415,7 @@ test('messageControl()', (t) => {
         '*  [This is removed](#this-is-removed)'
       ].join('\n'),
       (error, file) => {
-        t.deepEqual(
+        assert.deepEqual(
           [error, ...(file || {messages: []}).messages.map(String)],
           [undefined],
           'should ignore final gaps'
@@ -441,7 +441,7 @@ test('messageControl()', (t) => {
       }
     )
     .process('', (error, file) => {
-      t.deepEqual(
+      assert.deepEqual(
         [error, ...(file || {messages: []}).messages.map(String)],
         [undefined, '1:1: Error'],
         'should support empty documents'
@@ -467,7 +467,7 @@ test('messageControl()', (t) => {
       }
     )
     .process('# README\n', (error, file) => {
-      t.deepEqual(
+      assert.deepEqual(
         [error, ...(file || {messages: []}).messages.map(String)],
         [undefined, '2:1: Error'],
         'should message at the end of the document'
@@ -493,7 +493,7 @@ test('messageControl()', (t) => {
       }
     )
     .process('# README\n\n*   List', (error, file) => {
-      t.deepEqual(
+      assert.deepEqual(
         [error, ...(file || {messages: []}).messages.map(String)],
         [undefined, '3:9: Error'],
         'should message at the end of the document'
@@ -529,7 +529,7 @@ test('messageControl()', (t) => {
         'This is a paragraph.'
       ].join('\n'),
       (error, file) => {
-        t.deepEqual(
+        assert.deepEqual(
           [error, ...(file || {messages: []}).messages.map(String)],
           [undefined],
           'should ignore double disables'
@@ -555,7 +555,7 @@ test('messageControl()', (t) => {
       }
     )
     .process('Foo', (error, file) => {
-      t.deepEqual(
+      assert.deepEqual(
         [error, ...(file || {messages: []}).messages.map(String)],
         [undefined, '1:1: Error'],
         'should not ignore messages without location information'
@@ -573,7 +573,7 @@ test('messageControl()', (t) => {
         })
     )
     .process('<!doctype html>\n\n<!--bar baz qux-->\n', (error, file) => {
-      t.deepEqual(
+      assert.deepEqual(
         [error, ...(file || {messages: []}).messages.map(String)],
         [undefined],
         'should ignore non-markers'
@@ -594,7 +594,7 @@ test('messageControl()', (t) => {
     .process(
       '<!--foo ignore known-->\n\n<!--foo ignore unknown-->',
       (error, file) => {
-        t.deepEqual(
+        assert.deepEqual(
           [error, ...(file || {messages: []}).messages.map(String)],
           [undefined, "3:1-3:26: Unknown rule: cannot ignore `'unknown'`"],
           'should support a list of `known` values, and warn on unknowns'
@@ -621,7 +621,7 @@ test('messageControl()', (t) => {
       }
     )
     .process('<!--foo ignore bar-->\n\nFoo', (error, file) => {
-      t.deepEqual(
+      assert.deepEqual(
         [error, ...(file || {messages: []}).messages.map(String)],
         [undefined],
         'should ignore by `source`, when given as a string'
@@ -658,7 +658,7 @@ test('messageControl()', (t) => {
         'Golf'
       ].join('\n'),
       (error, file) => {
-        t.deepEqual(
+        assert.deepEqual(
           [error, ...(file || {messages: []}).messages.map(String)],
           [undefined],
           'should ignore by `source`, when given as an array'
@@ -685,7 +685,7 @@ test('messageControl()', (t) => {
       }
     )
     .process('This is a paragraph.', (error, file) => {
-      t.deepEqual(
+      assert.deepEqual(
         [error, ...(file || {messages: []}).messages.map(String)],
         [undefined],
         'should support initial `disable`s'
@@ -712,7 +712,7 @@ test('messageControl()', (t) => {
       }
     )
     .process('This is a paragraph.', (error, file) => {
-      t.deepEqual(
+      assert.deepEqual(
         [error, ...(file || {messages: []}).messages.map(String)],
         [undefined, '1:1-1:21: Error'],
         'should support initial `enable`s'
@@ -737,7 +737,7 @@ test('messageControl()', (t) => {
       }
     )
     .process('<!--foo disable bar-->\n', (error, file) => {
-      t.deepEqual(
+      assert.deepEqual(
         [error, ...(file || {messages: []}).messages.map(String)],
         [undefined],
         'should disable messages at the start of a marker'
@@ -763,7 +763,7 @@ test('messageControl()', (t) => {
       }
     )
     .process('<!--foo enable-->\n', (error, file) => {
-      t.deepEqual(
+      assert.deepEqual(
         [error, ...(file || {messages: []}).messages.map(String)],
         [undefined, '1:1: Error'],
         'should enable messages at the start of a marker'
@@ -788,7 +788,7 @@ test('messageControl()', (t) => {
       }
     )
     .process('<!--foo disable bar-->\n', (error, file) => {
-      t.deepEqual(
+      assert.deepEqual(
         [error, ...(file || {messages: []}).messages.map(String)],
         [undefined],
         'should disable messages without positional info (at the start of a document)'
@@ -814,7 +814,7 @@ test('messageControl()', (t) => {
       }
     )
     .process('<!--foo enable-->\n', (error, file) => {
-      t.deepEqual(
+      assert.deepEqual(
         [error, ...(file || {messages: []}).messages.map(String)],
         [undefined, '1:1: Error'],
         'should enable messages without positional info (at the start of a document)'
@@ -834,12 +834,10 @@ test('messageControl()', (t) => {
         }
     )
     .process('', (error, file) => {
-      t.deepEqual(
+      assert.deepEqual(
         [error, ...(file || {messages: []}).messages.map(String)],
         [undefined, '1:1: Error'],
         'should not fail when there are messages but no `children` on `tree`'
       )
     })
-
-  t.end()
 })
