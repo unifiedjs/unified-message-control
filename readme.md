@@ -49,14 +49,14 @@ npm install unified-message-control
 In Deno with [`esm.sh`][esmsh]:
 
 ```js
-import {messageControl} from 'https://esm.sh/unified-message-control@4'
+import {messageControl} from 'https://esm.sh/unified-message-control@5'
 ```
 
 In browsers with [`esm.sh`][esmsh]:
 
 ```html
 <script type="module">
-  import {messageControl} from 'https://esm.sh/unified-message-control@4?bundle'
+  import {messageControl} from 'https://esm.sh/unified-message-control@5?bundle'
 </script>
 ```
 
