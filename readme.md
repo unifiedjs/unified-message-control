@@ -84,12 +84,14 @@ const file = await read('example.md')
 await unified()
   .use(remarkParse)
   .use(remarkStringify)
-  .use(() => (tree, file) => {
-    file.message('Whoops!', tree.children[1], 'foo:thing')
+  .use(function () {
+    return function (tree, file) {
+      file.message('Whoops!', tree.children[1], 'foo:thing')
+    }
   })
   .use(messageControl, {
-    name: 'foo',
     marker: commentMarker,
+    name: 'foo',
     test: 'html'
   })
   .process(file)
@@ -134,14 +136,14 @@ See [`unist-util-is`][test].
 ###### `options.marker`
 
 Parse a possible marker to a [comment marker object][marker] (`Function`).
-If the possible marker actually isn’t a marker, should return `null`.
+If the possible marker actually isn’t a marker, should return `undefined`.
 
 ###### `options.known`
 
 List of allowed `ruleId`s (`Array<string>`, optional).
 When given, a warning is shown when someone tries to control an unknown rule.
 
-For example, `{name: 'alpha', known: ['bravo']}` results in a warning if
+For example, `{known: ['bravo'], name: 'alpha'}` results in a warning if
 `charlie` is configured:
 
 ```markdown
