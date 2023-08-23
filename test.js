@@ -9,8 +9,8 @@ import remarkParse from 'remark-parse'
 import remarkStringify from 'remark-stringify'
 import remarkToc from 'remark-toc'
 import {unified} from 'unified'
+import {messageControl} from 'unified-message-control'
 import {VFile} from 'vfile'
-import {messageControl} from './index.js'
 
 /** @type {import('unified').Processor<Root, Root, Root, Root, 'string'>} */
 // @ts-expect-error: to do: remove when remark is released.
