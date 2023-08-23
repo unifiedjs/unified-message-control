@@ -9,31 +9,58 @@ import remarkParse from 'remark-parse'
 import remarkStringify from 'remark-stringify'
 import remarkToc from 'remark-toc'
 import {unified} from 'unified'
-import messageControl from './index.js'
+import {VFile} from 'vfile'
+import {messageControl} from './index.js'
 
 /** @type {import('unified').Processor<Root, Root, Root, Root, 'string'>} */
 // @ts-expect-error: to do: remove when remark is released.
 const remark = unified().use(remarkParse).use(remarkStringify).freeze()
 
 test('messageControl', async function (t) {
+  /** @type {Root} */
+  const node = {type: 'root', children: []}
+
   await t.test('should expose the public api', async function () {
     assert.deepEqual(Object.keys(await import('./index.js')).sort(), [
-      'default'
+      'messageControl'
     ])
   })
 
   await t.test('should throw without `name`', async function () {
     assert.throws(function () {
       // @ts-expect-error: check how `options` missing is handled.
-      messageControl()
-    }, /Expected `name` in `options`, got `undefined`/)
+      messageControl(node)
+    }, /Expected `options`/)
+  })
+
+  await t.test('should throw without file', async function () {
+    assert.throws(function () {
+      messageControl(
+        node,
+        // @ts-expect-error: check how `file` missing is handled.
+        {marker() {}, name: 'foo'}
+      )
+    }, /Expected `file` in `options`/)
   })
 
   await t.test('should throw without marker', async function () {
     assert.throws(function () {
-      // @ts-expect-error: check how `name` missing is handled.
-      messageControl({name: 'foo'})
-    }, /Expected `marker` in `options`, got `undefined`/)
+      messageControl(
+        node,
+        // @ts-expect-error: check how `marker` missing is handled.
+        {file: new VFile()}
+      )
+    }, /Expected `marker` in `options`/)
+  })
+
+  await t.test('should throw without name', async function () {
+    assert.throws(function () {
+      messageControl(
+        node,
+        // @ts-expect-error: check how `name` missing is handled.
+        {file: new VFile(), marker() {}}
+      )
+    }, /Expected `name` in `options`/)
   })
 
   await t.test('should *not* throw without test', async function () {
@@ -41,8 +68,7 @@ test('messageControl', async function (t) {
       remark()
         .use(function () {
           return function (tree, file) {
-            const control = messageControl({marker() {}, name: 'foo'})
-            control(tree, file)
+            messageControl(tree, {file, marker() {}, name: 'foo'})
           }
         })
         .freeze()
@@ -57,13 +83,12 @@ test('messageControl', async function (t) {
           return function (tree, file) {
             file.message('Error', tree.children[1], 'foo:bar')
 
-            const control = messageControl({
+            messageControl(tree, {
+              file,
               marker: commentMarker,
               name: 'foo',
               test: 'html'
             })
-
-            control(tree, file)
           }
         }
       )
@@ -87,13 +112,12 @@ test('messageControl', async function (t) {
             return function (tree, file) {
               file.message('Error', tree.children[1], 'foo:bar')
 
-              const control = messageControl({
+              messageControl(tree, {
+                file,
                 marker: commentMarker,
                 name: 'foo',
                 test: 'html'
               })
-
-              control(tree, file)
             }
           }
         )
@@ -117,14 +141,13 @@ test('messageControl', async function (t) {
             file.message('Error', tree.children[0], 'foo:bar')
             file.message('Error', tree.children[2], 'foo:bar')
 
-            const control = messageControl({
+            messageControl(tree, {
+              file,
               marker: commentMarker,
               name: 'foo',
               test: 'html',
               reset: true
             })
-
-            control(tree, file)
           }
         }
       )
@@ -152,14 +175,13 @@ test('messageControl', async function (t) {
           return function (tree, file) {
             file.message('Error', tree.children[1], 'foo:bar')
 
-            const control = messageControl({
+            messageControl(tree, {
+              file,
               marker: commentMarker,
               name: 'foo',
               test: 'html',
               reset: true
             })
-
-            control(tree, file)
           }
         }
       )
@@ -182,13 +204,12 @@ test('messageControl', async function (t) {
             file.message('Error', tree.children[1], 'foo:bar')
             file.message('Error', tree.children[3], 'foo:bar')
 
-            const control = messageControl({
+            messageControl(tree, {
+              file,
               marker: commentMarker,
               name: 'foo',
               test: 'html'
             })
-
-            control(tree, file)
           }
         }
       )
@@ -221,13 +242,12 @@ test('messageControl', async function (t) {
               file.message('Error', tree.children[1], 'foo:bar')
               file.message('Error', tree.children[3], 'foo:bar')
 
-              const control = messageControl({
+              messageControl(tree, {
+                file,
                 marker: commentMarker,
                 name: 'foo',
                 test: 'html'
               })
-
-              control(tree, file)
             }
           }
         )
@@ -259,13 +279,12 @@ test('messageControl', async function (t) {
             file.message('Error', tree.children[1], 'foo:bar')
             file.message('Error', tree.children[2], 'foo:bar')
 
-            const control = messageControl({
+            messageControl(tree, {
+              file,
               marker: commentMarker,
               name: 'foo',
               test: 'html'
             })
-
-            control(tree, file)
           }
         }
       )
@@ -296,13 +315,12 @@ test('messageControl', async function (t) {
               file.message('Error', tree.children[1], 'foo:bar')
               file.message('Error', tree.children[2], 'foo:bar')
 
-              const control = messageControl({
+              messageControl(tree, {
+                file,
                 marker: commentMarker,
                 name: 'foo',
                 test: 'html'
               })
-
-              control(tree, file)
             }
           }
         )
@@ -332,13 +350,12 @@ test('messageControl', async function (t) {
             file.message('Error', tree.children[1], 'foo:bar')
             file.message('Error', tree.children[1], 'foo:baz')
 
-            const control = messageControl({
+            messageControl(tree, {
+              file,
               marker: commentMarker,
               name: 'foo',
               test: 'html'
             })
-
-            control(tree, file)
           }
         }
       )
@@ -356,12 +373,12 @@ test('messageControl', async function (t) {
     remark()
       .use(function () {
         return function (tree, file) {
-          const control = messageControl({
+          messageControl(tree, {
+            file,
             marker: commentMarker,
             name: 'foo',
             test: 'html'
           })
-          control(tree, file)
         }
       })
       .process('<!--foo test-->', function (error) {
@@ -384,13 +401,12 @@ test('messageControl', async function (t) {
             file.message('Error', {line: 5, column: 1}, 'foo:bar')
             file.message('Error', {line: 7, column: 1}, 'foo:bar')
 
-            const control = messageControl({
+            messageControl(tree, {
+              file,
               marker: commentMarker,
               name: 'foo',
               test: 'html'
             })
-
-            control(tree, file)
           }
         }
       )
@@ -424,13 +440,12 @@ test('messageControl', async function (t) {
             // Remove list.
             tree.children.pop()
 
-            const control = messageControl({
+            messageControl(tree, {
+              file,
               marker: commentMarker,
               name: 'foo',
               test: 'html'
             })
-
-            control(tree, file)
           }
         }
       )
@@ -458,13 +473,12 @@ test('messageControl', async function (t) {
           return function (tree, file) {
             file.message('Error', undefined, 'foo:bar')
 
-            const control = messageControl({
+            messageControl(tree, {
+              file,
               marker: commentMarker,
               name: 'foo',
               test: 'html'
             })
-
-            control(tree, file)
           }
         }
       )
@@ -484,13 +498,12 @@ test('messageControl', async function (t) {
             assert(tree.position)
             file.message('Error', tree.position.end, 'foo:bar')
 
-            const control = messageControl({
+            messageControl(tree, {
+              file,
               marker: commentMarker,
               name: 'foo',
               test: 'html'
             })
-
-            control(tree, file)
           }
         }
       )
@@ -512,13 +525,12 @@ test('messageControl', async function (t) {
             assert(head.position)
             file.message('Error', head.position.end, 'foo:bar')
 
-            const control = messageControl({
+            messageControl(tree, {
+              file,
               marker: commentMarker,
               name: 'foo',
               test: 'html'
             })
-
-            control(tree, file)
           }
         }
       )
@@ -538,13 +550,12 @@ test('messageControl', async function (t) {
             file.message('Error', tree.children[1], 'foo:bar')
             file.message('Error', tree.children[3], 'foo:bar')
 
-            const control = messageControl({
+            messageControl(tree, {
+              file,
               marker: commentMarker,
               name: 'foo',
               test: 'html'
             })
-
-            control(tree, file)
           }
         }
       )
@@ -576,13 +587,12 @@ test('messageControl', async function (t) {
             return function (tree, file) {
               file.message('Error', undefined, 'foo:bar')
 
-              const control = messageControl({
+              messageControl(tree, {
+                file,
                 marker: commentMarker,
                 name: 'foo',
                 test: 'html'
               })
-
-              control(tree, file)
             }
           }
         )
@@ -598,12 +608,12 @@ test('messageControl', async function (t) {
     remark()
       .use(function () {
         return function (tree, file) {
-          const control = messageControl({
+          messageControl(tree, {
+            file,
             marker: commentMarker,
             name: 'foo',
             test: 'html'
           })
-          control(tree, file)
         }
       })
       .process(
@@ -622,13 +632,13 @@ test('messageControl', async function (t) {
       remark()
         .use(function () {
           return function (tree, file) {
-            const control = messageControl({
+            messageControl(tree, {
+              file,
               known: ['known'],
               marker: commentMarker,
               name: 'foo',
               test: 'html'
             })
-            control(tree, file)
           }
         })
         .process(
@@ -654,14 +664,13 @@ test('messageControl', async function (t) {
             return function (tree, file) {
               file.message('Error', tree.children[1], 'baz:bar')
 
-              const control = messageControl({
+              messageControl(tree, {
+                file,
                 marker: commentMarker,
                 name: 'foo',
                 source: 'baz',
                 test: 'html'
               })
-
-              control(tree, file)
             }
           }
         )
@@ -684,14 +693,13 @@ test('messageControl', async function (t) {
               file.message('Error', tree.children[1], 'bravo:delta')
               file.message('Error', tree.children[3], 'charlie:echo')
 
-              const control = messageControl({
+              messageControl(tree, {
+                file,
                 marker: commentMarker,
                 name: 'alpha',
                 source: ['bravo', 'charlie'],
                 test: 'html'
               })
-
-              control(tree, file)
             }
           }
         )
@@ -722,14 +730,13 @@ test('messageControl', async function (t) {
           return function (tree, file) {
             file.message('Error', tree.children[0], 'foo:bar')
 
-            const control = messageControl({
+            messageControl(tree, {
               disable: ['bar'],
+              file,
               marker: commentMarker,
               name: 'foo',
               test: 'html'
             })
-
-            control(tree, file)
           }
         }
       )
@@ -748,15 +755,14 @@ test('messageControl', async function (t) {
           return function (tree, file) {
             file.message('Error', tree.children[0], 'foo:bar')
 
-            const control = messageControl({
+            messageControl(tree, {
               enable: ['bar'],
+              file,
               marker: commentMarker,
               name: 'foo',
               reset: true,
               test: 'html'
             })
-
-            control(tree, file)
           }
         }
       )
@@ -777,13 +783,12 @@ test('messageControl', async function (t) {
             return function (tree, file) {
               file.message('Error', {line: 1, column: 1}, 'foo:bar')
 
-              const control = messageControl({
+              messageControl(tree, {
+                file,
                 marker: commentMarker,
                 name: 'foo',
                 test: 'html'
               })
-
-              control(tree, file)
             }
           }
         )
@@ -805,14 +810,13 @@ test('messageControl', async function (t) {
             return function (tree, file) {
               file.message('Error', {line: 1, column: 1}, 'foo:bar')
 
-              const control = messageControl({
+              messageControl(tree, {
+                file,
                 marker: commentMarker,
                 name: 'foo',
                 reset: true,
                 test: 'html'
               })
-
-              control(tree, file)
             }
           }
         )
@@ -834,13 +838,12 @@ test('messageControl', async function (t) {
             return function (tree, file) {
               file.message('Error', undefined, 'foo:bar')
 
-              const control = messageControl({
+              messageControl(tree, {
+                file,
                 marker: commentMarker,
                 name: 'foo',
                 test: 'html'
               })
-
-              control(tree, file)
             }
           }
         )
@@ -862,14 +865,13 @@ test('messageControl', async function (t) {
             return function (tree, file) {
               file.message('Error', undefined, 'foo:bar')
 
-              const control = messageControl({
+              messageControl(tree, {
+                file,
                 marker: commentMarker,
                 name: 'foo',
                 reset: true,
                 test: 'html'
               })
-
-              control(tree, file)
             }
           }
         )
