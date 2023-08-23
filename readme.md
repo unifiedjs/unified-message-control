@@ -17,8 +17,10 @@
 *   [Install](#install)
 *   [Use](#use)
 *   [API](#api)
-    *   [`unified().use(messageControl, options)`](#unifiedusemessagecontrol-options)
-    *   [Markers](#markers)
+    *   [`messageControl(tree, options)`](#messagecontroltree-options)
+    *   [`Marker`](#marker)
+    *   [`MarkerParser`](#markerparser)
+    *   [`Options`](#options)
 *   [Types](#types)
 *   [Compatibility](#compatibility)
 *   [Contribute](#contribute)
@@ -38,7 +40,7 @@ content type, and want to let authors control messages from that content.
 ## Install
 
 This package is [ESM only][esm].
-In Node.js (version 12.20+, 14.14+, 16.0+, or 18.0+), install with [npm][]:
+In Node.js (version 16+), install with [npm][]:
 
 ```sh
 npm install unified-message-control
@@ -47,14 +49,14 @@ npm install unified-message-control
 In Deno with [`esm.sh`][esmsh]:
 
 ```js
-import messageControl from 'https://esm.sh/unified-message-control@4'
+import {messageControl} from 'https://esm.sh/unified-message-control@4'
 ```
 
 In browsers with [`esm.sh`][esmsh]:
 
 ```html
 <script type="module">
-  import messageControl from 'https://esm.sh/unified-message-control@4?bundle'
+  import {messageControl} from 'https://esm.sh/unified-message-control@4?bundle'
 </script>
 ```
 
@@ -71,13 +73,13 @@ Say our document `example.md` contains:
 …and our module `example.js` looks as follows:
 
 ```js
-import {read} from 'to-vfile'
-import {reporter} from 'vfile-reporter'
 import {commentMarker} from 'mdast-comment-marker'
-import {unified} from 'unified'
-import messageControl from 'unified-message-control'
 import remarkParse from 'remark-parse'
 import remarkStringify from 'remark-stringify'
+import {read} from 'to-vfile'
+import {unified} from 'unified'
+import {messageControl} from 'unified-message-control'
+import {reporter} from 'vfile-reporter'
 
 const file = await read('example.md')
 
@@ -108,76 +110,31 @@ example.md: no issues found
 ## API
 
 This package exports no identifiers.
-The default export is `messageControl`.
+It exports the identifier [`messageControl`][api-message-control].
 
-### `unified().use(messageControl, options)`
+### `messageControl(tree, options)`
 
-Let comment markers control messages from certain sources.
+Let comment markers control messages.
 
-##### `options`
+###### Parameters
 
-Configuration.
+*   `tree` ([`Node`][node])
+    — tree
+*   `options` ([`Options`][api-options])
+    — configuration (required)
 
-###### `options.name`
+###### Returns
 
-Name of markers that can control the message sources (`string`).
+Nothing (`undefined`).
 
-For example, `{name: 'alpha'}` controls `alpha` markers:
+### `Marker`
 
-```markdown
-<!--alpha ignore-->
-```
+Comment marker (TypeScript type).
 
-###### `options.test`
+###### Notes
 
-Test for possible markers (`Function`, `string`, `Object`, or `Array<Test>`).
-See [`unist-util-is`][test].
-
-###### `options.marker`
-
-Parse a possible marker to a [comment marker object][marker] (`Function`).
-If the possible marker actually isn’t a marker, should return `undefined`.
-
-###### `options.known`
-
-List of allowed `ruleId`s (`Array<string>`, optional).
-When given, a warning is shown when someone tries to control an unknown rule.
-
-For example, `{known: ['bravo'], name: 'alpha'}` results in a warning if
-`charlie` is configured:
-
-```markdown
-<!--alpha ignore charlie-->
-```
-
-###### `options.reset`
-
-Whether to treat all messages as turned off initially (`boolean`, default:
-`false`).
-
-###### `options.enable`
-
-List of `ruleId`s to initially turn on if `reset: true`
-(`Array<string>`, optional).
-By default (`reset: false`), all rules are turned on.
-
-###### `options.disable`
-
-List of `ruleId`s to turn on if `reset: false` (`Array<string>`, optional).
-
-###### `options.sources`
-
-Sources that can be controlled with `name` markers (`string` or
-`Array<string>`, default: `options.name`)
-
-### Markers
-
-###### `disable`
-
-The **disable** keyword turns off all messages of the given rule identifiers.
-When without identifiers, all messages are turned off.
-
-For example, to turn off certain messages:
+The **disable** keyword turns off messages.
+For example:
 
 ```markdown
 <!--lint disable list-item-bullet-indent strong-marker-->
@@ -189,12 +146,8 @@ A paragraph, and now another list.
   * __bar__
 ```
 
-###### `enable`
-
-The **enable** keyword turns on all messages of the given rule identifiers.
-When without identifiers, all messages are turned on.
-
-For example, to enable certain messages:
+The **enable** keyword turns on messages.
+For example:
 
 ```markdown
 <!--lint enable strong-marker-->
@@ -202,15 +155,9 @@ For example, to enable certain messages:
 **foo** and __bar__.
 ```
 
-###### `ignore`
-
-The **ignore** keyword turns off all messages of the given `ruleId`s occurring
-in the following node.
-When without `ruleId`s, all messages are ignored.
-
+The **ignore** keyword turns off messages in the following node.
 After the end of the following node, messages are turned on again.
-
-For example, to turn off certain messages for the next node:
+For example:
 
 ```markdown
 <!--lint ignore list-item-bullet-indent strong-marker-->
@@ -219,17 +166,88 @@ For example, to turn off certain messages for the next node:
     * __bar__
 ```
 
+###### Fields
+
+*   `name` (`string`)
+    — name of marker
+*   `attributes` (`string`)
+    — raw values (space-separated); the first should be `enable`, `disable`, or
+    `ignore`, the rest are optional rule identifiers
+
+### `MarkerParser`
+
+Parse a possible comment marker (TypeScript type).
+
+###### Parameters
+
+*   `node` ([`Node`][node])
+    — potential marker
+
+###### Returns
+
+`Marker` ([`Marker`][marker], optional).
+
+### `Options`
+
+Configuration (TypeScript type).
+
+###### Notes
+
+The given `name` defines which comments work.
+Assuming there’s a `marker` configured that parses HTML comments such as
+`<!--x y z-->` to a mark with `name: 'x'`, then giving `name: 'x'` will
+use comments such as:
+
+```html
+<!--alpha ignore-->
+```
+
+When `known` is given, a warning is shown when unknown rules are controlled.
+For example, `{name: 'alpha', known: ['bravo']}` results in a warning (for
+`charlie`):
+
+```html
+<!--alpha ignore charlie-->
+```
+
+###### Fields
+
+*   `enable` (`Array<string>`, optional)
+    — list of `ruleId`s to initially turn on; used if `reset` is `true`
+*   `disable` (`Array<string>`, optional)
+    — list of `ruleId`s to initially turn off; used if `reset` is not `true`
+*   `known` (`Array<string>`, optional)
+    — list of allowed `ruleId`s
+*   `file` ([`VFile`][vfile], **required**)
+    — corresponding file
+*   `marker` ([`MarkerParser`][api-marker-parser], **required**)
+    — parse nodes to [`Marker`][api-marker] objects
+*   `name` (`string`, **required**)
+    — name of markers that can control the message sources
+*   `reset` (`boolean`, default: `false`)
+    — whether to treat all messages as turned off initially
+*   `source` (`Array<string>` or `string`, default: `options.name`)
+    — [sources][vfile-message-fields] that can be controlled with markers
+*   `test` ([`Test`][unist-util-is-test], optional)
+    — test for possible markers
+
 ## Types
 
 This package is fully typed with [TypeScript][].
-It exports the additional types `Marker`, `MarkerParser`, and `Options`.
+It exports the additional types
+[`Marker`][api-marker],
+[`MarkerParser`][api-marker-parser], and
+[`Options`][api-options].
 
 ## Compatibility
 
-Projects maintained by the unified collective are compatible with all maintained
+Projects maintained by the unified collective are compatible with maintained
 versions of Node.js.
-As of now, that is Node.js 12.20+, 14.14+, 16.0+, and 18.0+.
-Our projects sometimes work with older versions, but this is not guaranteed.
+
+When we cut a new major release, we drop support for unmaintained versions of
+Node.
+This means we try to keep the current release line,
+`unified-message-control@^4`, compatible with Node.js 12.
 
 ## Contribute
 
@@ -259,7 +277,7 @@ abide by its terms.
 
 [downloads]: https://www.npmjs.com/package/unified-message-control
 
-[size-badge]: https://img.shields.io/bundlephobia/minzip/unified-message-control.svg
+[size-badge]: https://img.shields.io/bundlejs/size/unified-message-control
 
 [size]: https://bundlephobia.com/result?p=unified-message-control
 
@@ -297,6 +315,20 @@ abide by its terms.
 
 [unified]: https://github.com/unifiedjs/unified
 
-[test]: https://github.com/syntax-tree/unist-util-is#api
-
 [remark-message-control]: https://github.com/remarkjs/remark-message-control
+
+[vfile]: https://github.com/vfile/vfile
+
+[node]: https://github.com/syntax-tree/unist#node
+
+[unist-util-is-test]: https://github.com/syntax-tree/unist-util-is#api
+
+[vfile-message-fields]: https://github.com/vfile/vfile-message/tree/main#fields
+
+[api-marker]: #marker
+
+[api-marker-parser]: #markerparser
+
+[api-message-control]: #messagecontroltree-options
+
+[api-options]: #options
