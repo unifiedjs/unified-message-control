@@ -637,7 +637,7 @@ test('messageControl', async function (t) {
             assert.equal(error, undefined)
             assert(file)
             assert.deepEqual(file.messages.map(String), [
-              "3:1-3:26: Unknown rule: cannot ignore `'unknown'`"
+              "3:1-3:26: Cannot ignore `'unknown'`, it’s not known"
             ])
           }
         )
