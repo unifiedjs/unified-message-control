@@ -392,7 +392,6 @@ test('messageControl', async function (t) {
 
   await t.test('should ignore gaps', async function () {
     remark()
-      // @ts-expect-error: to do: remove when `remark-toc` is released.
       .use(remarkToc)
       .use(
         /** @type {import('unified').Plugin<[], Root>} */
